@@ -1,0 +1,9 @@
+# Please add the things to be ignored for API
+\bin
+\obj
+\.vs
+/API/Freshcots.Web.User.API/Logs
+PublishProfiles
+ServiceDependencies
+node_modules
+.env
