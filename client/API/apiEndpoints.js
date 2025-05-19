@@ -8,7 +8,7 @@ const API_ENDPOINTS = {
       RESET_PASSWORD: '/auth/reset-password',
     },
     USER: {
-      PROFILE: '/users/me',
+      PROFILE: '/profile',
       UPDATE_PROFILE: '/users/me',
       CHANGE_PASSWORD: '/users/change-password',
     },

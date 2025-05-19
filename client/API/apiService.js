@@ -23,9 +23,11 @@ const apiClient = axios.create({
 // Intercept and add token
 apiClient.interceptors.request.use(
   async (config) => {
-    const token = store.getState().auth.token;
+    const token = store.getState().auth.token || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJ1emVxZUBhc2NpaWJpbmRlci5uZXQiLCJpYXQiOjE3NDc2MTI1MjQsImV4cCI6MTc0NzY5ODkyNH0.doiyy2WAo16se0DgID7tez5pH4JtHKYH2gKKSM3mNcw";
+    console.log(token, 'token')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      config.headers["x-auth-token"] = `${token}`;
     }
     return config;
   },

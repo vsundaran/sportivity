@@ -12,6 +12,11 @@ import {
 import { useState } from "react";
 import apiService from "../../API/apiService";
 import API_ENDPOINTS from "../../API/apiEndpoints";
+import Toast from "react-native-toast-message";
+import { useToast } from "@/custom-hooks/useToast";
+import { useRouter } from "expo-router";
+import { useDispatch } from "react-redux";
+import { setToken } from "@/redux/slices/authSlice";
 
 const IC_NORMAL_SCREEN = require("../../assets/images/background/normalScren.png");
 
@@ -32,6 +37,9 @@ const LoginScreen = () => {
   const [error, setError] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [otpError, setOtpError] = useState("");
+  const { showSuccess, showError } = useToast();
+  const router = useRouter();
+  const dispatch = useDispatch();
 
   const validateEmail = (email: string) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -59,12 +67,16 @@ const LoginScreen = () => {
       });
       // const response = await sendOTP(email);
       if (response?.success) {
-        Alert.alert("Success", response.message || "OTP sent successfully");
+        showSuccess("OTP Sent!", response.message || "Please check your inbox");
         setOtpSent(true);
       } else {
-        Alert.alert("Error", response.message || "Failed to send OTP");
+        showError(
+          "Failed to Send OTP!",
+          response.message || "Please try again"
+        );
       }
     } catch (err: any) {
+      showError("Failed to Send OTP!", err.message || "Please try again");
       setError(err.message || "Failed to send OTP. Please try again.");
     } finally {
       setLoading(false);
@@ -94,12 +106,17 @@ const LoginScreen = () => {
         }
       );
       if (response?.success) {
-        Alert.alert("Success", response.message || "OTP verified successfully");
-        // Navigate to next screen or perform login
+        showSuccess("OTP verified!!!", response.message || "");
+        dispatch(setToken(response.token || ""));
+        router.replace("/(profile)/profile");
       } else {
-        Alert.alert("Error", response.message || "Invalid OTP");
+        showError(
+          "Failed to verify OTP!",
+          response.message || "Please try again"
+        );
       }
     } catch (err: any) {
+      showError("Failed to verify OTP!", err.message || "Please try again");
       setOtpError(err.message || "Verification failed. Please try again.");
     } finally {
       setLoading(false);
