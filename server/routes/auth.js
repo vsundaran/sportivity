@@ -40,8 +40,14 @@ router.post('/send-otp', async (req, res) => {
       user = new User({ email });
       await user.save();
     }
+    let otp;
+    // bypassing the OTP for the testing 
+    if(email === "vsundaran77@gamil.com"){
+       otp = 654321
+    }else{
+      otp = generateOTP();
+    }
     
-    const otp = generateOTP();
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + parseInt(process.env.OTP_EXPIRE_MINUTES || 10));
     

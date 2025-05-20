@@ -24,7 +24,7 @@ const SkillAssessmentSummary = () => {
   ]);
 
   const renderSkillBar = (skill: any, index: any) => {
-    const panRef = useRef(new Animated.ValueXY()).current;
+    const panRef = useRef<any>(new Animated.ValueXY()).current;
     const initialX = (skill.score / 10) * 100;
 
     const panResponder = useRef(
@@ -32,7 +32,7 @@ const SkillAssessmentSummary = () => {
         onStartShouldSetPanResponder: () => true,
         onPanResponderGrant: () => {
           panRef.setOffset({
-            x: panRef.x._value,
+            x: panRef?.x?._value,
             y: 0,
           });
           panRef.setValue({ x: 0, y: 0 });
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
   levelContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 24,
+    marginBottom: 32,
   },
   levelScoreContainer: {
     width: 60,
@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   skillBarContainer: {
-    marginBottom: 24,
+    marginBottom: 34,
   },
   skillBar: {
     height: 6,
@@ -343,7 +343,7 @@ const styles = StyleSheet.create({
   skillName: {
     fontSize: 12,
     color: "#757575",
-    marginTop: 8,
+    marginTop: 10,
   },
   footer: {
     padding: 16,
