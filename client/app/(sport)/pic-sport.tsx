@@ -65,7 +65,10 @@ const SportSelectionScreen = () => {
 
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.navigate("/(profile)/profile")}
+        >
           <MaterialCommunityIcons name="arrow-left" size={24} color="black" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Pick Your Primary Sport</Text>

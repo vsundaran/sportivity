@@ -42,7 +42,7 @@ router.post('/send-otp', async (req, res) => {
     }
     let otp;
     // bypassing the OTP for the testing 
-    if(email === "vsundaran77@gamil.com"){
+    if(email === "vsundaran77@gmail.com"){
        otp = 654321
     }else{
       otp = generateOTP();

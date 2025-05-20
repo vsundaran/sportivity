@@ -12,6 +12,7 @@ import {
   PanResponderGestureState,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
 const SkillAssessmentSummary = () => {
   // Initial skill ratings
@@ -22,6 +23,8 @@ const SkillAssessmentSummary = () => {
     { name: "VOLLEY", score: 0, color: "#9E9E9E" },
     { name: "LOB/SMASH", score: 0, color: "#9E9E9E" },
   ]);
+
+  const router = useRouter();
 
   const renderSkillBar = (skill: any, index: any) => {
     const panRef = useRef<any>(new Animated.ValueXY()).current;
@@ -137,7 +140,10 @@ const SkillAssessmentSummary = () => {
 
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.navigate("/(sport)/pic-sport")}
+        >
           <MaterialCommunityIcons name="arrow-left" size={24} color="black" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Skill Assessment Summary</Text>
