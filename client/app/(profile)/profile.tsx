@@ -15,6 +15,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { GetProfile, UpdateProfile } from "../../API/apiHandler";
 import Toast from "react-native-toast-message";
+import { useRouter } from "expo-router";
 
 export default function ProfileScreen() {
   const [firstName, setFirstName] = useState("");
@@ -25,6 +26,7 @@ export default function ProfileScreen() {
   const [country, setCountry] = useState("India");
   const [gender, setGender] = useState("");
   const [showYearPicker, setShowYearPicker] = useState(false);
+  const router = useRouter();
 
   const { data, error, isLoading } = useQuery({
     queryKey: ["posts"],
@@ -38,6 +40,7 @@ export default function ProfileScreen() {
         type: "success",
         text1: "Profile updated successfully",
       });
+      router.replace("/(sport)/pic-sport");
     },
     onError: (error) => {
       Toast.show({

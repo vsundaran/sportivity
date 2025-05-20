@@ -18,9 +18,11 @@ router.get('/', auth, async (req, res) => {
 router.put('/', auth, async (req, res) => {
   try {
     const { firstName, lastName, gender, yearOfBirth, shortBio, country } = req.body;
+    // if the user is updated their profile means, it is not a new user
+    const isNewUser = false
     const user = await User.findOneAndUpdate(
       { email: req.user.email },
-      { $set: { firstName, lastName, gender, yearOfBirth, shortBio, country } },
+      { $set: { firstName, lastName, gender, yearOfBirth, shortBio, country, isNewUser } },
       { new: true }
     );
     res.json(user);
