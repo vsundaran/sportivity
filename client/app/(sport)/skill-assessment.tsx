@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,122 +6,53 @@ import {
   StyleSheet,
   SafeAreaView,
   StatusBar,
-  PanResponder,
-  Animated,
-  GestureResponderEvent,
-  PanResponderGestureState,
+  ScrollView,
 } from "react-native";
+import Slider from "@react-native-community/slider";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const SkillAssessmentSummary = () => {
   // Initial skill ratings
   const [skillRatings, setSkillRatings] = useState([
-    { name: "FOREHAND", score: 7.5, color: "#F9A825" },
-    { name: "BACKHAND", score: 2.0, color: "#8D6E63" },
-    { name: "SERVE", score: 8.0, color: "#F9A825" },
-    { name: "VOLLEY", score: 0, color: "#9E9E9E" },
-    { name: "LOB/SMASH", score: 0, color: "#9E9E9E" },
+    { name: "FOREHAND", score: 5, color: "#F9A825" },
+    { name: "BACKHAND", score: 5, color: "#8D6E63" },
+    { name: "SERVE", score: 5, color: "#F9A825" },
+    { name: "VOLLEY", score: 5, color: "#9E9E9E" },
+    { name: "LOB/SMASH", score: 5, color: "#9E9E9E" },
   ]);
 
   const router = useRouter();
 
-  const renderSkillBar = (skill: any, index: any) => {
-    const panRef = useRef<any>(new Animated.ValueXY()).current;
-    const initialX = (skill.score / 10) * 100;
-
-    const panResponder = useRef(
-      PanResponder.create({
-        onStartShouldSetPanResponder: () => true,
-        onPanResponderGrant: () => {
-          panRef.setOffset({
-            x: panRef?.x?._value,
-            y: 0,
-          });
-          panRef.setValue({ x: 0, y: 0 });
-        },
-        onPanResponderMove: (_, gestureState) => {
-          // Calculate the new position within the bar's bounds
-          const barWidth = 100; // percentage width
-          const newX = Math.min(
-            Math.max(initialX + gestureState.dx / 3, 0),
-            barWidth
-          );
-          panRef.x.setValue(newX - initialX);
-        },
-        onPanResponderRelease: (_, gestureState) => {
-          // Calculate the final score based on position
-          const barWidth = 100; // percentage width
-          const newPosition = Math.min(
-            Math.max(initialX + gestureState.dx / 3, 0),
-            barWidth
-          );
-          const newScore = parseFloat(((newPosition / 100) * 10).toFixed(1));
-
-          // Update the score in state
-          const newSkillRatings = [...skillRatings];
-          newSkillRatings[index] = {
-            ...skill,
-            score: newScore,
-            color:
-              newScore > 0 ? (newScore < 5 ? "#8D6E63" : "#F9A825") : "#9E9E9E",
-          };
-          setSkillRatings(newSkillRatings);
-
-          // Reset the animated value
-          panRef.flattenOffset();
-        },
-      })
-    ).current;
-
-    // Calculate the position for the marker
-    const markerPosition = Animated.add(panRef.x, new Animated.Value(initialX));
-
-    const animatedStyle = {
-      left: markerPosition.interpolate({
-        inputRange: [0, 100],
-        outputRange: ["0%", "100%"],
-        extrapolate: "clamp",
-      }),
+  const handleValueChange = (value: number, index: number) => {
+    const newSkillRatings = [...skillRatings];
+    newSkillRatings[index] = {
+      ...newSkillRatings[index],
+      score: value,
+      color: value > 0 ? (value < 5 ? "#8D6E63" : "#F9A825") : "#9E9E9E",
     };
+    setSkillRatings(newSkillRatings);
+  };
 
+  const renderSkillBar = (skill: any, index: number) => {
     return (
       <View key={skill.name} style={styles.skillBarContainer}>
-        <View style={styles.skillBar}>
-          <View style={styles.skillBarBackground} />
-          <Animated.View
-            style={[
-              styles.skillBarProgress,
-              {
-                width: markerPosition.interpolate({
-                  inputRange: [0, 100],
-                  outputRange: ["0%", "100%"],
-                  extrapolate: "clamp",
-                }),
-              },
-            ]}
+        <View style={styles.sliderContainer}>
+          <Slider
+            style={styles.slider}
+            minimumValue={0}
+            maximumValue={10}
+            step={0.1}
+            value={skill.score}
+            onValueChange={(value) => handleValueChange(value, index)}
+            minimumTrackTintColor="#2196F3"
+            maximumTrackTintColor="#E0E0E0"
+            thumbTintColor={skill.color}
           />
-          {skill.score > 0 ? (
-            <Animated.View
-              {...panResponder.panHandlers}
-              style={[
-                styles.skillScoreMarker,
-                animatedStyle,
-                { backgroundColor: skill.color },
-              ]}
-            >
-              <Text style={styles.skillScoreText}>
-                {skill.score.toFixed(1)}
-              </Text>
-            </Animated.View>
-          ) : (
-            <Animated.View
-              {...panResponder.panHandlers}
-              style={[styles.zeroScoreMarker, animatedStyle]}
-            >
-              <Text style={styles.zeroScoreText}>0</Text>
-            </Animated.View>
-          )}
+          <View style={styles.sliderValueContainer}>
+            <Text style={styles.sliderValue}>{skill.score.toFixed(1)}</Text>
+          </View>
         </View>
         <Text style={styles.skillName}>{skill.name}</Text>
       </View>
@@ -135,63 +66,74 @@ const SkillAssessmentSummary = () => {
   const formattedAverage = averageScore.toFixed(1);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="dark-content" />
 
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.navigate("/(sport)/pic-sport")}
-        >
-          <MaterialCommunityIcons name="arrow-left" size={24} color="black" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Skill Assessment Summary</Text>
-      </View>
-
-      {/* Main Content */}
-      <View style={styles.content}>
-        <Text style={styles.sectionTitle}>SKILL SUMMARY</Text>
-
-        {/* Tennis Icon and Title */}
-        <View style={styles.sportContainer}>
-          <View style={styles.sportIconContainer}>
-            <MaterialCommunityIcons name="tennis" size={30} color="white" />
-          </View>
-          <Text style={styles.sportName}>TENNIS</Text>
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.navigate("/(sport)/pic-sport")}
+          >
+            <MaterialCommunityIcons name="arrow-left" size={24} color="black" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Skill Assessment Summary</Text>
         </View>
 
-        {/* Bronze Level */}
-        <View style={styles.levelContainer}>
-          <View style={styles.levelScoreContainer}>
-            <Text style={styles.levelScore}>{formattedAverage}</Text>
-          </View>
-          <View style={styles.levelInfoContainer}>
-            <Text style={styles.levelName}>BRONZE</Text>
-            <Text style={styles.levelDescription}>
-              Congrats on making it to the Bronze zone for tennis, you are all
-              set to explore activities.
-            </Text>
-          </View>
-        </View>
+        <ScrollView style={styles.scrollView}>
+          {/* Main Content */}
+          <View style={styles.content}>
+            <Text style={styles.sectionTitle}>SKILL SUMMARY</Text>
 
-        {/* Skill Bars */}
-        <View style={styles.skillBarsContainer}>
-          {skillRatings.map((skill, index) => renderSkillBar(skill, index))}
-        </View>
-      </View>
+            {/* Tennis Icon and Title */}
+            <View style={styles.sportContainer}>
+              <View style={styles.sportIconContainer}>
+                <MaterialCommunityIcons name="tennis" size={30} color="white" />
+              </View>
+              <Text style={styles.sportName}>TENNIS</Text>
+            </View>
 
-      {/* Footer */}
-      <View style={styles.footer}>
-        <TouchableOpacity style={styles.exploreButton}>
-          <Text style={styles.exploreButtonText}>EXPLORE ACTIVITIES</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+            {/* Bronze Level */}
+            <View style={styles.levelContainer}>
+              <View style={styles.levelScoreContainer}>
+                <Text style={styles.levelScore}>{formattedAverage}</Text>
+              </View>
+              <View style={styles.levelInfoContainer}>
+                <Text style={styles.levelName}>BRONZE</Text>
+                <Text style={styles.levelDescription}>
+                  Congrats on making it to the Bronze zone for tennis, you are
+                  all set to explore activities.
+                </Text>
+              </View>
+            </View>
+
+            {/* Skill Bars */}
+
+            <View style={styles.skillBarsContainer}>
+              {skillRatings.map((skill, index) => renderSkillBar(skill, index))}
+            </View>
+          </View>
+        </ScrollView>
+
+        {/* Footer */}
+        <View style={styles.footer}>
+          <TouchableOpacity
+            style={styles.exploreButton}
+            onPress={() => router.navigate("/(activity)/createActivity")}
+          >
+            <Text style={styles.exploreButtonText}>EXPLORE ACTIVITIES</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    </GestureHandlerRootView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollView: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     backgroundColor: "#F5F7FA",
@@ -214,7 +156,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "500",
     color: "#2196F3",
-    marginRight: 40, // To offset the back button and center the title
+    marginRight: 40,
   },
   content: {
     flex: 1,
@@ -282,74 +224,26 @@ const styles = StyleSheet.create({
   skillBarContainer: {
     marginBottom: 34,
   },
-  skillBar: {
-    height: 6,
-    marginBottom: 4,
-    position: "relative",
-  },
-  skillBarBackground: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    height: 6,
-    backgroundColor: "#E0E0E0",
-    borderRadius: 3,
-  },
-  skillBarProgress: {
-    position: "absolute",
-    left: 0,
-    height: 6,
-    backgroundColor: "#2196F3",
-    borderRadius: 3,
-  },
-  skillScoreMarker: {
-    position: "absolute",
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "#FFC107",
-    justifyContent: "center",
+  sliderContainer: {
+    flexDirection: "row",
     alignItems: "center",
-    marginLeft: -18,
-    top: -15,
-    zIndex: 10,
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
   },
-  skillScoreText: {
-    color: "white",
-    fontWeight: "bold",
-    fontSize: 14,
+  slider: {
+    flex: 1,
+    height: 10,
   },
-  zeroScoreMarker: {
-    position: "absolute",
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "#9E9E9E",
-    justifyContent: "center",
+  sliderValueContainer: {
+    width: 40,
     alignItems: "center",
-    marginLeft: -18,
-    top: -15,
-    zIndex: 10,
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
   },
-  zeroScoreText: {
-    color: "white",
-    fontWeight: "bold",
+  sliderValue: {
     fontSize: 14,
+    fontWeight: "bold",
   },
   skillName: {
     fontSize: 12,
     color: "#757575",
-    marginTop: 10,
+    marginTop: 0,
   },
   footer: {
     padding: 16,

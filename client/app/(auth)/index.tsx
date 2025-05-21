@@ -77,7 +77,7 @@ const LoginScreen = () => {
       }
     } catch (err: any) {
       showError("Failed to Send OTP!", err.message || "Please try again");
-      setError(err.message || "Failed to send OTP. Please try again.");
+      setError(err?.message || "Failed to send OTP. Please try again.");
     } finally {
       setLoading(false);
     }
