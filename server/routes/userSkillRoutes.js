@@ -1,11 +1,11 @@
-const router = express.Router();
 const express = require('express');
+const router = express.Router();
 const auth = require('../middleware/auth');
 const userSkillController = require('../controllers/userSkillController');
 
+router.get('/', auth, userSkillController.getUserSkill);
 router.post('/', auth, userSkillController.createUserSkill);
-router.get('/', auth, userSkillController.getAllUserSkills);
-router.get('/:id', auth, userSkillController.getUserSkill);
+router.get('/all', auth, userSkillController.getAllUserSkills);
 router.put('/:id', auth, userSkillController.updateUserSkill);
 router.delete('/:id', auth, userSkillController.deleteUserSkill);
 
