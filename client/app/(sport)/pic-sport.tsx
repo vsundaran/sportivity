@@ -1,14 +1,17 @@
+import { UpdateSkill } from "@/API/apiHandler";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
   SafeAreaView,
   StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import Toast from "react-native-toast-message";
 
 const SportSelectionScreen = () => {
   const [activeTab, setActiveTab] = useState("main");
@@ -21,6 +24,27 @@ const SportSelectionScreen = () => {
     { name: "Walking", icon: "walk" },
     { name: "Jogging", icon: "run" },
   ];
+
+  const { mutate } = useMutation({
+    mutationFn: UpdateSkill,
+    onSuccess: () => {
+      Toast.show({
+        type: "success",
+        text1: "Sport details updated",
+      });
+      router.replace("/(sport)/skill-assessment");
+    },
+    onError: (error) => {
+      Toast.show({
+        type: "error",
+        text1: "Failed to update sport details",
+        text2: error.message || "Something went wrong",
+      });
+    },
+  });
+
+
+
 
   const otherSports: any = [
     // Future sports go here
@@ -60,7 +84,7 @@ const SportSelectionScreen = () => {
   };
 
   return (
-    
+
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
 
@@ -122,7 +146,7 @@ const SportSelectionScreen = () => {
       {/* Continue Button */}
       <TouchableOpacity
         style={styles.continueButton}
-        onPress={() => router.replace("/(sport)/skill-assessment")}
+        onPress={() => mutate({ primarySport: selectedSport })}
       >
         <Text style={styles.continueButtonText}>CONTINUE</Text>
       </TouchableOpacity>

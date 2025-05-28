@@ -1,21 +1,21 @@
+import { Ionicons } from "@expo/vector-icons";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
+  Modal,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
   StyleSheet,
-  View,
   Text,
   TextInput,
   TouchableOpacity,
-  SafeAreaView,
-  StatusBar,
-  ScrollView,
-  Modal,
   TouchableWithoutFeedback,
+  View,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { GetProfile, UpdateProfile } from "../../API/apiHandler";
 import Toast from "react-native-toast-message";
-import { useRouter } from "expo-router";
+import { GetProfile, UpdateProfile } from "../../API/apiHandler";
 
 export default function ProfileScreen() {
   const [firstName, setFirstName] = useState("");
@@ -29,7 +29,7 @@ export default function ProfileScreen() {
   const router = useRouter();
 
   const { data, error, isLoading } = useQuery({
-    queryKey: ["posts"],
+    queryKey: ["getProfile"],
     queryFn: GetProfile,
   });
 
@@ -76,7 +76,7 @@ export default function ProfileScreen() {
       setGender(
         profileData.gender
           ? profileData.gender.charAt(0).toUpperCase() +
-              profileData.gender.slice(1)
+          profileData.gender.slice(1)
           : ""
       );
     }
@@ -153,8 +153,8 @@ export default function ProfileScreen() {
                 style={
                   yearOfBirth
                     ? {
-                        fontSize: 16,
-                      }
+                      fontSize: 16,
+                    }
                     : styles.dateInputText
                 }
               >

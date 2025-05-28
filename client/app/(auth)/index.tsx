@@ -46,6 +46,7 @@ const LoginScreen = () => {
   };
 
   const handleSendOTP = async () => {
+    setOtp("");
     setError("");
 
     // Validate email
@@ -107,7 +108,12 @@ const LoginScreen = () => {
       if (response?.success) {
         showSuccess("OTP verified!!!", response.message || "");
         dispatch(setToken(response.token || ""));
-        router.replace("/(profile)/profile");
+        const { isNewUser } = response?.data || {}
+        if (isNewUser) {
+          router.replace("/(profile)/profile");
+        } else {
+          router.replace("/(activity)/activityList")
+        }
       } else {
         showError(
           "Failed to verify OTP!",

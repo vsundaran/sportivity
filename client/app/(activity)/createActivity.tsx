@@ -1,22 +1,67 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  TextInput,
-  ScrollView,
-  Image,
-  Switch,
-  SafeAreaView,
-  StatusBar,
-} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import React, { useState } from "react";
+import {
+  Animated,
+  Easing,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View
+} from "react-native";
+
+const sports = [
+  {
+    id: 1,
+    name: "Tennis",
+    icon: "tennisball-outline",
+    color: "#e74c3c",
+    activeColor: "#c0392b",
+  },
+  {
+    id: 2,
+    name: "Badminton",
+    icon: "basketball-outline",
+    color: "#27ae60",
+    activeColor: "#219653",
+  },
+  {
+    id: 3,
+    name: "Padel",
+    icon: "tennisball-outline",
+    color: "#3498db",
+    activeColor: "#2980b9",
+  },
+  {
+    id: 4,
+    name: "Squash",
+    icon: "basketball-outline",
+    color: "#9b59b6",
+    activeColor: "#8e44ad",
+  },
+  {
+    id: 5,
+    name: "Pickleball",
+    icon: "tennisball-outline",
+    color: "#f39c12",
+    activeColor: "#e67e22",
+  },
+  {
+    id: 6,
+    name: "Other",
+    icon: "ellipsis-horizontal",
+    color: "#95a5a6",
+    activeColor: "#7f8c8d",
+  },
+];
 
 const NewActivityScreen = () => {
-  // State for form fields
-  const [selectedSport, setSelectedSport] = useState("Tennis");
+  const [selectedSport, setSelectedSport] = useState(sports[0]);
   const [duration, setDuration] = useState(6);
   const [playerSlots, setPlayerSlots] = useState(6);
   const [isPlaying, setIsPlaying] = useState(true);
@@ -24,10 +69,10 @@ const NewActivityScreen = () => {
   const [isVenueBooked, setIsVenueBooked] = useState(false);
   const [isVisibleToInvited, setIsVisibleToInvited] = useState(false);
   const [isClubActivity, setIsClubActivity] = useState(false);
+  const [animation] = useState(new Animated.Value(0));
 
   const router = useRouter();
 
-  // Sample player data
   const players = [
     {
       id: 1,
@@ -50,14 +95,36 @@ const NewActivityScreen = () => {
     { id: 4, name: "V", rating: 4.7, image: "https://i.pravatar.cc/100?img=3" },
   ];
 
-  // Function to handle sport selection
   const handleSportSelect = (sport: any) => {
+    Animated.sequence([
+      Animated.timing(animation, {
+        toValue: 1,
+        duration: 150,
+        easing: Easing.ease,
+        useNativeDriver: true,
+      }),
+      Animated.timing(animation, {
+        toValue: 0,
+        duration: 150,
+        easing: Easing.ease,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
     setSelectedSport(sport);
   };
 
-  // Function to increment/decrement values
   const adjustValue = (value: any, setValue: any, increment: any) => {
     setValue(increment ? value + 1 : Math.max(1, value - 1));
+  };
+
+  const scaleInterpolation = animation.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [1, 1.1, 1],
+  });
+
+  const animatedStyle = {
+    transform: [{ scale: scaleInterpolation }],
   };
 
   return (
@@ -66,7 +133,10 @@ const NewActivityScreen = () => {
 
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.back()}
+        >
           <Ionicons name="close" size={24} color="black" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>New Activity</Text>
@@ -77,106 +147,79 @@ const NewActivityScreen = () => {
         {/* Sport Selection */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>CHOOSE A SPORT</Text>
-          <View style={styles.sportOptions}>
-            <TouchableOpacity
-              style={[
-                styles.sportButton,
-                selectedSport === "Tennis" && styles.sportButtonSelected,
-                {
-                  backgroundColor:
-                    selectedSport === "Tennis" ? "#e74c3c" : "#f0f0f0",
-                },
-              ]}
-              onPress={() => handleSportSelect("Tennis")}
-            >
-              <Ionicons
-                name="tennisball-outline"
-                size={18}
-                color="white"
-                style={styles.sportIcon}
-              />
-              <Text
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.sportOptionsContainer}
+          >
+            {sports.map((sport) => (
+              <Animated.View
+                key={sport.id}
                 style={[
-                  styles.sportText,
-                  { color: selectedSport === "Tennis" ? "white" : "black" },
+                  selectedSport.id === sport.id && animatedStyle,
+                  { marginRight: 12 },
                 ]}
               >
-                Tennis
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.sportButton,
-                selectedSport === "Badminton" && styles.sportButtonSelected,
-                {
-                  backgroundColor:
-                    selectedSport === "Badminton" ? "#27ae60" : "#f0f0f0",
-                },
-              ]}
-              onPress={() => handleSportSelect("Badminton")}
-            >
-              <Ionicons
-                name="basketball-outline"
-                size={18}
-                color="white"
-                style={styles.sportIcon}
-              />
-              <Text
-                style={[
-                  styles.sportText,
-                  { color: selectedSport === "Badminton" ? "white" : "black" },
-                ]}
-              >
-                Badminton
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.sportButton,
-                selectedSport === "Other" && styles.sportButtonSelected,
-                {
-                  backgroundColor:
-                    selectedSport === "Other" ? "#95a5a6" : "#f0f0f0",
-                },
-              ]}
-              onPress={() => handleSportSelect("Other")}
-            >
-              <Text
-                style={[
-                  styles.sportText,
-                  { color: selectedSport === "Other" ? "white" : "black" },
-                ]}
-              >
-                Other
-              </Text>
-            </TouchableOpacity>
-          </View>
+                <TouchableOpacity
+                  style={[
+                    styles.sportButton,
+                    selectedSport.id === sport.id && {
+                      backgroundColor: sport.activeColor,
+                      shadowColor: sport.color,
+                      shadowOffset: { width: 0, height: 2 },
+                      shadowOpacity: 0.3,
+                      shadowRadius: 4,
+                      elevation: 5,
+                    },
+                    {
+                      backgroundColor:
+                        selectedSport.id === sport.id
+                          ? sport.activeColor
+                          : "#f0f0f0",
+                    },
+                  ]}
+                  onPress={() => handleSportSelect(sport)}
+                >
+                  <Ionicons
+                    // name={sport.name || ""}
+                    size={18}
+                    color={selectedSport.id === sport.id ? "white" : sport.color}
+                    style={styles.sportIcon}
+                  />
+                  <Text
+                    style={[
+                      styles.sportText,
+                      {
+                        color:
+                          selectedSport.id === sport.id ? "white" : "#333",
+                      },
+                    ]}
+                  >
+                    {sport.name}
+                  </Text>
+                </TouchableOpacity>
+              </Animated.View>
+            ))}
+          </ScrollView>
 
           {/* Sport Selection Indicators */}
           <View style={styles.indicators}>
-            <View
-              style={[
-                styles.indicator,
-                selectedSport === "Tennis" && styles.indicatorActive,
-              ]}
-            />
-            <View
-              style={[
-                styles.indicator,
-                selectedSport === "Badminton" && styles.indicatorActive,
-              ]}
-            />
-            <View
-              style={[
-                styles.indicator,
-                selectedSport === "Other" && styles.indicatorActive,
-              ]}
-            />
+            {sports.map((sport) => (
+              <View
+                key={sport.id}
+                style={[
+                  styles.indicator,
+                  selectedSport.id === sport.id && [
+                    styles.indicatorActive,
+                    { backgroundColor: sport.color },
+                  ],
+                ]}
+              />
+            ))}
           </View>
         </View>
 
+        {/* Rest of your components... */}
         {/* Game Type */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>GAME TYPE</Text>
@@ -394,6 +437,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  sportOptionsContainer: {
+    paddingVertical: 8,
   },
   header: {
     flexDirection: "row",

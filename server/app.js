@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const authRoutes = require('./routes/auth');
 const profileRoutes = require('./routes/profile');
 const userSkillRoutes = require('./routes/userSkillRoutes');
+const gameSkillsRoutes = require('./routes/gameSkills');
 // const activityRoutes = require('./routes/activity');
 
 const app = express();
@@ -26,6 +27,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/user-skill', userSkillRoutes);
+app.use('/api/game-skills', gameSkillsRoutes);
 
 // app.use('/api/activity', activityRoutes);
 

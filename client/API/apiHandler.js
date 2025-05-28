@@ -1,5 +1,5 @@
-import apiService from "./apiService";
 import apiEndpoints from "./apiEndpoints";
+import apiService from "./apiService";
 
 //profile
 export const GetProfile = async () => {
@@ -14,6 +14,17 @@ export const GetProfile = async () => {
 export const UpdateProfile = async (data) => {
   try {
     const response = await apiService.put(apiEndpoints.USER.PROFILE, data);
+    return response;
+  } catch (err) {
+    throw err
+  }
+};
+
+
+// sport
+export const UpdateSkill = async (data) => {
+  try {
+    const response = await apiService.post(apiEndpoints.SKILLS.USER_SKILL, data);
     return response;
   } catch (err) {
     throw err

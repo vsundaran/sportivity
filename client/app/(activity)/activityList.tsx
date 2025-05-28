@@ -1,22 +1,23 @@
 "use client";
 
+import {
+  FontAwesome5,
+  Ionicons,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
   Image,
   SafeAreaView,
+  ScrollView,
   StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import {
-  Ionicons,
-  MaterialIcons,
-  FontAwesome5,
-  MaterialCommunityIcons,
-} from "@expo/vector-icons";
 
 // Activity type definition
 type Activity = {
@@ -142,6 +143,9 @@ const ActivitiesList = () => {
   const [selectedTime, setSelectedTime] = useState(timeOptions[0]);
   const [selectedClub, setSelectedClub] = useState(clubOptions[0]);
   const [bookmarkedCount, setBookmarkedCount] = useState(5);
+
+
+  const router = useRouter();
 
   const toggleBookmark = (id: string) => {
     // In a real app, you would update the state properly
@@ -338,7 +342,9 @@ const ActivitiesList = () => {
       </ScrollView>
 
       {/* Floating Action Button */}
-      <TouchableOpacity style={styles.fab}>
+      <TouchableOpacity style={styles.fab}
+        onPress={() => router.navigate("/(activity)/createActivity")}
+      >
         <Ionicons name="add" size={24} color="white" />
       </TouchableOpacity>
 

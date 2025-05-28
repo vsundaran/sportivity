@@ -1,17 +1,20 @@
+import { UpdateSkill } from "@/API/apiHandler";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import Slider from "@react-native-community/slider";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  View,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  StyleSheet,
-  SafeAreaView,
-  StatusBar,
-  ScrollView,
+  View,
 } from "react-native";
-import Slider from "@react-native-community/slider";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import Toast from "react-native-toast-message";
 
 const SkillAssessmentSummary = () => {
   // Initial skill ratings
@@ -22,6 +25,8 @@ const SkillAssessmentSummary = () => {
     { name: "VOLLEY", score: 5, color: "#9E9E9E" },
     { name: "LOB/SMASH", score: 5, color: "#9E9E9E" },
   ]);
+
+  
 
   const router = useRouter();
 
@@ -34,6 +39,40 @@ const SkillAssessmentSummary = () => {
     };
     setSkillRatings(newSkillRatings);
   };
+
+  const { mutate } = useMutation({
+    mutationFn: UpdateSkill,
+    onSuccess: () => {
+      Toast.show({
+        type: "success",
+        text1: "Sport details updated",
+      });
+      router.replace("/(activity)/activityList");
+    },
+    onError: (error) => {
+      Toast.show({
+        type: "error",
+        text1: "Failed to update sport details",
+        text2: error.message || "Something went wrong",
+      });
+    },
+  });
+
+  const handlePress = () => {
+    mutate({
+      "level": "bronze",
+      "score": 5,
+      "skills": [
+        { "name": "forehand", "score": 5 },
+        { "name": "backhand", "score": 5 },
+        { "name": "serve", "score": 5 },
+        { "name": "volley", "score": 5 },
+        { "name": "lob", "score": 5 }
+      ]
+    })
+  }
+
+
 
   const renderSkillBar = (skill: any, index: number) => {
     return (
@@ -120,7 +159,7 @@ const SkillAssessmentSummary = () => {
         <View style={styles.footer}>
           <TouchableOpacity
             style={styles.exploreButton}
-            onPress={() => router.navigate("/(activity)/createActivity")}
+            onPress={handlePress}
           >
             <Text style={styles.exploreButtonText}>EXPLORE ACTIVITIES</Text>
           </TouchableOpacity>
