@@ -1,22 +1,21 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  Dimensions,
-  TouchableOpacity,
-  TextInput,
-  ActivityIndicator,
-  Alert,
-} from "react-native";
-import { useState } from "react";
-import apiService from "../../API/apiService";
-import API_ENDPOINTS from "../../API/apiEndpoints";
-import Toast from "react-native-toast-message";
 import { useToast } from "@/custom-hooks/useToast";
-import { useRouter } from "expo-router";
-import { useDispatch } from "react-redux";
 import { setToken } from "@/redux/slices/authSlice";
+import { useRouter } from "expo-router";
+import { useState } from "react";
+import {
+  ActivityIndicator,
+  Dimensions,
+  Image,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from "react-native";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useDispatch } from "react-redux";
+import API_ENDPOINTS from "../../API/apiEndpoints";
+import apiService from "../../API/apiService";
 
 const IC_NORMAL_SCREEN = require("../../assets/images/background/normalScren.png");
 
@@ -124,99 +123,107 @@ const LoginScreen = () => {
   };
 
   return (
-    <View style={styles.mainView}>
-      <View
-        style={{
-          position: "absolute",
-          height: "100%",
-          width: "100%",
-          top: 0,
-          backgroundColor: "white",
-        }}
-      >
-        <Image
-          source={IC_NORMAL_SCREEN}
-          style={{ width: "100%", height: "100%", resizeMode: "cover" }}
-        />
-      </View>
+    <KeyboardAwareScrollView
+      style={{ flex: 1 }}
+      contentContainerStyle={{ flexGrow: 1 }}
+      enableOnAndroid
+      keyboardShouldPersistTaps="handled"
+    >
 
-      <View style={styles.mainBottomView}>
-        {/* Email Input Field */}
-        <View style={styles.inputContainer}>
-          <TextInput
-            placeholder="Enter your email"
-            placeholderTextColor="#999"
-            style={[styles.emailInput, error ? styles.inputError : null]}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoCorrect={false}
-            value={email}
-            onChangeText={(text) => {
-              setEmail(text);
-              if (error) setError(""); // Clear error when typing
-            }}
-            editable={!loading && !otpSent}
+      <View style={styles.mainView}>
+        <View
+          style={{
+            position: "absolute",
+            height: "100%",
+            width: "100%",
+            top: 0,
+            backgroundColor: "white",
+          }}
+        >
+          <Image
+            source={IC_NORMAL_SCREEN}
+            style={{ width: "100%", height: "100%", resizeMode: "cover" }}
           />
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
         </View>
 
-        {/* OTP Input Field (visible after OTP is sent) */}
-        {otpSent && (
-          <View style={[styles.inputContainer, { marginTop: 5 }]}>
+        <View style={styles.mainBottomView}>
+          {/* Email Input Field */}
+          <View style={styles.inputContainer}>
             <TextInput
-              placeholder="Enter OTP"
+              placeholder="Enter your email"
               placeholderTextColor="#999"
-              style={[styles.emailInput, otpError ? styles.inputError : null]}
-              keyboardType="number-pad"
+              style={[styles.emailInput, error ? styles.inputError : null]}
+              keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
-              value={otp}
+              value={email}
               onChangeText={(text) => {
-                setOtp(text);
-                if (otpError) setOtpError(""); // Clear error when typing
+                setEmail(text);
+                if (error) setError(""); // Clear error when typing
               }}
-              editable={!loading}
-              maxLength={6}
+              editable={!loading && !otpSent}
             />
-            {otpError ? <Text style={styles.errorText}>{otpError}</Text> : null}
+            {error ? <Text style={styles.errorText}>{error}</Text> : null}
           </View>
-        )}
 
-        {/* Submit Button */}
-        <TouchableOpacity
-          style={[
-            styles.submitButton,
-            loading ? styles.submitButtonDisabled : null,
-          ]}
-          onPress={otpSent ? handleVerifyOTP : handleSendOTP}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="white" />
-          ) : (
-            <Text style={styles.submitButtonText}>
-              {otpSent ? "Verify OTP" : "Send OTP"}
-            </Text>
+          {/* OTP Input Field (visible after OTP is sent) */}
+          {otpSent && (
+            <View style={[styles.inputContainer, { marginTop: 5 }]}>
+              <TextInput
+                placeholder="Enter OTP"
+                placeholderTextColor="#999"
+                style={[styles.emailInput, otpError ? styles.inputError : null]}
+                keyboardType="number-pad"
+                autoCapitalize="none"
+                autoCorrect={false}
+                value={otp}
+                onChangeText={(text) => {
+                  setOtp(text);
+                  if (otpError) setOtpError(""); // Clear error when typing
+                }}
+                editable={!loading}
+                maxLength={6}
+              />
+              {otpError ? <Text style={styles.errorText}>{otpError}</Text> : null}
+            </View>
           )}
-        </TouchableOpacity>
 
-        {/* Resend OTP option */}
-        {otpSent && (
+          {/* Submit Button */}
           <TouchableOpacity
-            style={{ marginTop: 15 }}
-            onPress={handleSendOTP}
+            style={[
+              styles.submitButton,
+              loading ? styles.submitButtonDisabled : null,
+            ]}
+            onPress={otpSent ? handleVerifyOTP : handleSendOTP}
             disabled={loading}
           >
-            <Text style={styles.resendText}>
-              Didn't receive OTP?{" "}
-              <Text style={{ color: "#1856AF", fontWeight: "bold" }}>
-                Resend
+            {loading ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <Text style={styles.submitButtonText}>
+                {otpSent ? "Verify OTP" : "Send OTP"}
               </Text>
-            </Text>
+            )}
           </TouchableOpacity>
-        )}
+
+          {/* Resend OTP option */}
+          {otpSent && (
+            <TouchableOpacity
+              style={{ marginTop: 15 }}
+              onPress={handleSendOTP}
+              disabled={loading}
+            >
+              <Text style={styles.resendText}>
+                Didn't receive OTP?{" "}
+                <Text style={{ color: "#1856AF", fontWeight: "bold" }}>
+                  Resend
+                </Text>
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
-    </View>
+    </KeyboardAwareScrollView>
   );
 };
 

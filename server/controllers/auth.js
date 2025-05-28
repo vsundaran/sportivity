@@ -122,7 +122,7 @@ exports.verifyOTP = async (req, res) => {
             success: true,
             message: 'OTP verified successfully',
             token,
-            data: User
+            data: userData
         });
     } catch (error) {
         console.error(error);
