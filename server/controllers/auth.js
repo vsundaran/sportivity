@@ -116,7 +116,7 @@ exports.verifyOTP = async (req, res) => {
 
         await OTP.deleteOne({ _id: otpRecord._id });
 
-        const token = jwt.sign({ email, id: userData._id || "" }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        const token = jwt.sign({ email, id: userData._id || "" }, process.env.JWT_SECRET, { expiresIn: '10d' });
 
         res.status(200).json({
             success: true,
