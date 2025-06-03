@@ -30,3 +30,13 @@ export const UpdateSkill = async (data) => {
     throw err
   }
 };
+
+// get skills
+export const GetSkills = async () => {
+  try {
+    const response = await apiService.get(apiEndpoints.SKILLS.GET_SKILLS);
+    return response;
+  } catch (err) {
+    throw err
+  }
+};

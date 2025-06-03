@@ -1,6 +1,6 @@
 import { UpdateSkill } from "@/API/apiHandler";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -18,6 +18,8 @@ const SportSelectionScreen = () => {
   const [selectedSport, setSelectedSport] = useState("Tennis");
   const router = useRouter();
 
+  const queryClient = useQueryClient()
+
   const mainSports = [
     { name: "Tennis", icon: "tennis" },
     { name: "Badminton", icon: "badminton" },
@@ -32,7 +34,8 @@ const SportSelectionScreen = () => {
         type: "success",
         text1: "Sport details updated",
       });
-      router.replace("/(sport)/skill-assessment");
+      queryClient.invalidateQueries({ queryKey: ['getSkills'] })
+      router.replace("/skill-assessment");
     },
     onError: (error) => {
       Toast.show({
@@ -92,7 +95,7 @@ const SportSelectionScreen = () => {
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => router.navigate("/(profile)/profile")}
+          onPress={() => router.navigate("/profile")}
         >
           <MaterialCommunityIcons name="arrow-left" size={24} color="black" />
         </TouchableOpacity>

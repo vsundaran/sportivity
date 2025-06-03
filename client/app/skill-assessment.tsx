@@ -1,9 +1,9 @@
-import { UpdateSkill } from "@/API/apiHandler";
+import { GetProfile, GetSkills, UpdateSkill } from "@/API/apiHandler";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -15,18 +15,26 @@ import {
 } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
+import { GetSkillsApiResponse } from "../constant/skills/constant";
 
 const SkillAssessmentSummary = () => {
-  // Initial skill ratings
-  const [skillRatings, setSkillRatings] = useState([
-    { name: "FOREHAND", score: 5, color: "#F9A825" },
-    { name: "BACKHAND", score: 5, color: "#8D6E63" },
-    { name: "SERVE", score: 5, color: "#F9A825" },
-    { name: "VOLLEY", score: 5, color: "#9E9E9E" },
-    { name: "LOB/SMASH", score: 5, color: "#9E9E9E" },
-  ]);
+  const { data } = useQuery({
+    queryKey: ["getSkills"],
+    queryFn: GetSkills,
+  });
 
-  
+  const skillsListData: GetSkillsApiResponse | any = data;
+  const skills = skillsListData?.skills || [];
+  const sportName = skillsListData?.name || "";
+  const sportIcon = skillsListData?.icon || "";
+
+  const [skillRatings, setSkillRatings] = useState(() => skills);
+
+  useEffect(() => {
+    if (skills.length > 0) {
+      setSkillRatings(skills);
+    }
+  }, [skills]);
 
   const router = useRouter();
 
@@ -47,7 +55,7 @@ const SkillAssessmentSummary = () => {
         type: "success",
         text1: "Sport details updated",
       });
-      router.replace("/(activity)/activityList");
+      router.replace("/activityList");
     },
     onError: (error) => {
       Toast.show({
@@ -59,24 +67,40 @@ const SkillAssessmentSummary = () => {
   });
 
   const handlePress = () => {
+    // Calculate the average score to determine the level
+    const averageScore = skillRatings.reduce(
+      (sum: number, skill: any) => sum + skill.score,
+      0
+    ) / skillRatings.length;
+
+    let level = "";
+    if (averageScore < 3) {
+      level = "beginner";
+    } else if (averageScore < 6) {
+      level = "bronze";
+    } else if (averageScore < 8) {
+      level = "silver";
+    } else {
+      level = "gold";
+    }
+
+    // Prepare the skills array for the API
+    const skillsForApi = skillRatings.map((skill: any) => ({
+      name: skill.name,
+      score: skill.score,
+    }));
+
+    // Call the mutation with the actual data
     mutate({
-      "level": "bronze",
-      "score": 5,
-      "skills": [
-        { "name": "forehand", "score": 5 },
-        { "name": "backhand", "score": 5 },
-        { "name": "serve", "score": 5 },
-        { "name": "volley", "score": 5 },
-        { "name": "lob", "score": 5 }
-      ]
-    })
-  }
-
-
+      level: level,
+      score: averageScore,
+      skills: skillsForApi,
+    });
+  };
 
   const renderSkillBar = (skill: any, index: number) => {
     return (
-      <View key={skill.name} style={styles.skillBarContainer}>
+      <View key={skill._id} style={styles.skillBarContainer}>
         <View style={styles.sliderContainer}>
           <Slider
             style={styles.slider}
@@ -100,9 +124,19 @@ const SkillAssessmentSummary = () => {
 
   // Calculate average score for the level indicator
   const averageScore =
-    skillRatings.reduce((sum, skill) => sum + skill.score, 0) /
+    skillRatings.reduce((sum: number, skill: any) => sum + skill.score, 0) /
     skillRatings.length;
   const formattedAverage = averageScore.toFixed(1);
+
+  // Determine level based on average score
+  const getLevelName = (score: number) => {
+    if (score < 3) return "BEGINNER";
+    if (score < 6) return "BRONZE";
+    if (score < 8) return "SILVER";
+    return "GOLD";
+  };
+
+  const levelName = getLevelName(averageScore);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -113,7 +147,7 @@ const SkillAssessmentSummary = () => {
         <View style={styles.header}>
           <TouchableOpacity
             style={styles.backButton}
-            onPress={() => router.navigate("/(sport)/pic-sport")}
+            onPress={() => router.navigate("/pic-sport")}
           >
             <MaterialCommunityIcons name="arrow-left" size={24} color="black" />
           </TouchableOpacity>
@@ -128,29 +162,33 @@ const SkillAssessmentSummary = () => {
             {/* Tennis Icon and Title */}
             <View style={styles.sportContainer}>
               <View style={styles.sportIconContainer}>
-                <MaterialCommunityIcons name="tennis" size={30} color="white" />
+                <MaterialCommunityIcons name={sportIcon} size={30} color="white" />
               </View>
-              <Text style={styles.sportName}>TENNIS</Text>
+              <Text style={styles.sportName}>{sportName.toUpperCase()}</Text>
             </View>
 
-            {/* Bronze Level */}
+            {/* Level */}
             <View style={styles.levelContainer}>
               <View style={styles.levelScoreContainer}>
                 <Text style={styles.levelScore}>{formattedAverage}</Text>
               </View>
               <View style={styles.levelInfoContainer}>
-                <Text style={styles.levelName}>BRONZE</Text>
+                <Text style={styles.levelName}>{levelName}</Text>
                 <Text style={styles.levelDescription}>
-                  Congrats on making it to the Bronze zone for tennis, you are
-                  all set to explore activities.
+                  {levelName === "BEGINNER"
+                    ? "You're just starting out, keep practicing to improve your skills!"
+                    : levelName === "BRONZE"
+                      ? "Congrats on making it to the Bronze zone, you are all set to explore activities."
+                      : levelName === "SILVER"
+                        ? "Great job! You've reached the Silver level with solid skills."
+                        : "Excellent! You've achieved the Gold level with advanced skills."}
                 </Text>
               </View>
             </View>
 
             {/* Skill Bars */}
-
             <View style={styles.skillBarsContainer}>
-              {skillRatings.map((skill, index) => renderSkillBar(skill, index))}
+              {skillRatings.map((skill: any, index: number) => renderSkillBar(skill, index))}
             </View>
           </View>
         </ScrollView>

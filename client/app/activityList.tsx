@@ -343,7 +343,7 @@ const ActivitiesList = () => {
 
       {/* Floating Action Button */}
       <TouchableOpacity style={styles.fab}
-        onPress={() => router.navigate("/(activity)/createActivity")}
+        onPress={() => router.navigate("/skill-assessment")}
       >
         <Ionicons name="add" size={24} color="white" />
       </TouchableOpacity>

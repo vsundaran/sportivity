@@ -12,6 +12,7 @@ const API_ENDPOINTS = {
   },
   SKILLS: {
     USER_SKILL: '/user-skill',
+    GET_SKILLS: '/game-skills',
   },
 };
 

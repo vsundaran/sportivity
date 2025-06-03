@@ -15,7 +15,7 @@ import {
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
-import { GetProfile, UpdateProfile } from "../../API/apiHandler";
+import { GetProfile, UpdateProfile } from "../API/apiHandler";
 
 export default function ProfileScreen() {
   const [firstName, setFirstName] = useState("");
@@ -28,7 +28,7 @@ export default function ProfileScreen() {
   const [showYearPicker, setShowYearPicker] = useState(false);
   const router = useRouter();
 
-  const { data, error, isLoading } = useQuery({
+  const { data } = useQuery({
     queryKey: ["getProfile"],
     queryFn: GetProfile,
   });
@@ -40,7 +40,7 @@ export default function ProfileScreen() {
         type: "success",
         text1: "Profile updated successfully",
       });
-      router.replace("/(sport)/pic-sport");
+      router.replace("/pic-sport");
     },
     onError: (error) => {
       Toast.show({
@@ -92,13 +92,6 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
-
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Profile</Text>
-        <View style={{ width: 24 }} />
-      </View>
-
       <ScrollView style={styles.scrollView}>
         {/* Profile Photo */}
         <View style={styles.photoContainer}>

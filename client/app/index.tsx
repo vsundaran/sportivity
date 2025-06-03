@@ -14,10 +14,10 @@ import {
 } from "react-native";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useDispatch } from "react-redux";
-import API_ENDPOINTS from "../../API/apiEndpoints";
-import apiService from "../../API/apiService";
+import API_ENDPOINTS from "../API/apiEndpoints";
+import apiService from "../API/apiService";
 
-const IC_NORMAL_SCREEN = require("../../assets/images/background/normalScren.png");
+const IC_NORMAL_SCREEN = require("../assets/images/background/normalScren.png");
 
 // Constants
 const FONT = {
@@ -110,9 +110,9 @@ const LoginScreen = () => {
         dispatch(setToken(response.token || ""));
         const { isNewUser } = response?.data || {}
         if (isNewUser) {
-          router.replace("/(profile)/profile");
+          router.replace("/profile");
         } else {
-          router.replace("/(activity)/activityList")
+          router.replace("/activityList")
         }
       } else {
         showError(
@@ -135,7 +135,6 @@ const LoginScreen = () => {
       enableOnAndroid
       keyboardShouldPersistTaps="handled"
     >
-
       <View style={styles.mainView}>
         <View
           style={{

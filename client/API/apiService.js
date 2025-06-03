@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Platform } from 'react-native';
 // import { getUniqueId } from 'react-native-device-info';
-import {store} from "../redux/store/index"
+import { store } from "../redux/store/index"
 
 // Base URL configuration
 const BASE_URL = Platform.select({
@@ -23,8 +23,7 @@ const apiClient = axios.create({
 // Intercept and add token
 apiClient.interceptors.request.use(
   async (config) => {
-    const token = store.getState().auth.token || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJ1emVxZUBhc2NpaWJpbmRlci5uZXQiLCJpYXQiOjE3NDc2MTI1MjQsImV4cCI6MTc0NzY5ODkyNH0.doiyy2WAo16se0DgID7tez5pH4JtHKYH2gKKSM3mNcw";
-    console.log(token, 'token')
+    const token = store.getState().auth.token;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
       config.headers["x-auth-token"] = `${token}`;
@@ -75,7 +74,7 @@ const apiService = {
   upload: (url, file, fieldName = 'file', config = {}) => {
     const formData = new FormData();
     formData.append(fieldName, file);
-    
+
     return apiClient.post(url, formData, {
       ...config,
       headers: {

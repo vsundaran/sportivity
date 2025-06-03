@@ -12,11 +12,11 @@ import { darkTheme, lightTheme } from "@/theme";
 import { Provider as PaperProvider } from 'react-native-paper';
 
 import { useColorScheme } from 'react-native';
-const scheme = useColorScheme();
 
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
+  const scheme = useColorScheme();
   return (
     <GestureHandlerRootView style={styles.flex}>
       <SafeAreaProvider>
@@ -24,9 +24,23 @@ export default function RootLayout() {
           <QueryClientProvider client={queryClient}>
             <AuthProvider>
               <Provider store={store}>
-                <Stack screenOptions={{ headerShown: false }}>
-                  <Stack.Screen name="(auth)" />
-                  <Stack.Screen name="(profile)" />
+                <Stack>
+                  <Stack.Screen name="index" options={{ headerShown: false }} />
+                  <Stack.Screen name="activityList" />
+                  <Stack.Screen name="createActivity" />
+                  <Stack.Screen name="pic-sport" />
+                  <Stack.Screen
+                    name="profile"
+                    options={{
+                      title: "Profile",
+                      headerTitleAlign: 'center',
+                      headerTintColor: darkTheme.colors.primary, // Use primary color for header text
+                      headerTitleStyle: {
+                        color: darkTheme.colors.primary,
+                      }
+                    }}
+                  />
+                  <Stack.Screen name="skill-assessment" />
                 </Stack>
                 <Toast />
               </Provider>

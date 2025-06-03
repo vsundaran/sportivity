@@ -421,7 +421,7 @@ const NewActivityScreen = () => {
         {/* Create Button */}
         <TouchableOpacity
           style={styles.createButton}
-          onPress={() => router.navigate("/(activity)/activityList")}
+          onPress={() => router.navigate("/activityList")}
         >
           <Text style={styles.createButtonText}>CREATE ACTIVITY</Text>
         </TouchableOpacity>
