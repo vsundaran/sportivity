@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState } from "react";
+import { useToken } from "@/custom-hooks/useToken";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext({});
 
@@ -7,6 +8,13 @@ export const AuthProvider = ({ children }: { children: any }) => {
 
   const login = (userData: any) => setUser(userData);
   const logout = () => setUser(null);
+
+  let { getToken } = useToken()
+
+  useEffect(() => {
+    const token = getToken();
+    console.log(token, 'token from AuthContext');
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, login, logout }}>

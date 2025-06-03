@@ -1,6 +1,7 @@
 import { useToast } from "@/custom-hooks/useToast";
+import { useToken } from "@/custom-hooks/useToken";
 import { setToken } from "@/redux/slices/authSlice";
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -39,6 +40,8 @@ const LoginScreen = () => {
   const { showSuccess, showError } = useToast();
   const router = useRouter();
   const dispatch = useDispatch();
+
+  let { saveToken } = useToken()
 
   const validateEmail = (email: string) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -107,12 +110,13 @@ const LoginScreen = () => {
       );
       if (response?.success) {
         showSuccess("OTP verified!!!", response.message || "");
+        saveToken(response.token || "");
         dispatch(setToken(response.token || ""));
         const { isNewUser } = response?.data || {}
         if (isNewUser) {
           router.replace("/profile");
         } else {
-          router.replace("/activityList")
+          router.replace("/activity-list")
         }
       } else {
         showError(
@@ -226,6 +230,8 @@ const LoginScreen = () => {
               </Text>
             </TouchableOpacity>
           )}
+
+          <Link href={"/create-activity"}>Hello</Link>
         </View>
       </View>
     </KeyboardAwareScrollView>

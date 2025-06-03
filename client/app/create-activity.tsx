@@ -130,19 +130,6 @@ const NewActivityScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
-
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <Ionicons name="close" size={24} color="black" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>New Activity</Text>
-        <View style={styles.headerRight} />
-      </View>
-
       <ScrollView style={styles.scrollView}>
         {/* Sport Selection */}
         <View style={styles.section}>
@@ -421,7 +408,7 @@ const NewActivityScreen = () => {
         {/* Create Button */}
         <TouchableOpacity
           style={styles.createButton}
-          onPress={() => router.navigate("/activityList")}
+          onPress={() => router.navigate("/activity-list")}
         >
           <Text style={styles.createButtonText}>CREATE ACTIVITY</Text>
         </TouchableOpacity>

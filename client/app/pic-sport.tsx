@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { ActivityIndicator } from "react-native-paper";
 import Toast from "react-native-toast-message";
 
 const SportSelectionScreen = () => {
@@ -27,7 +28,7 @@ const SportSelectionScreen = () => {
     { name: "Jogging", icon: "run" },
   ];
 
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: UpdateSkill,
     onSuccess: () => {
       Toast.show({
@@ -90,18 +91,6 @@ const SportSelectionScreen = () => {
 
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
-
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.navigate("/profile")}
-        >
-          <MaterialCommunityIcons name="arrow-left" size={24} color="black" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Pick Your Primary Sport</Text>
-      </View>
-
       {/* Tabs */}
       <View style={styles.tabContainer}>
         <TouchableOpacity
@@ -142,18 +131,25 @@ const SportSelectionScreen = () => {
       {/* Sports Grid */}
       <View style={styles.sportsGrid}>
         {activeTab === "main"
-          ? mainSports.map((sport) => renderSportItem(sport))
-          : otherSports.map((sport: any) => renderSportItem(sport))}
+          ? mainSports.map((sport) => renderSportItem(sport)) :
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+            <Text style={{ textAlign: 'center', marginTop: 30 }}>No other sports available yet.</Text>
+          </View>
+          // otherSports.map((sport: any) => renderSportItem(sport))
+        }
       </View>
 
       {/* Continue Button */}
       <TouchableOpacity
         style={styles.continueButton}
         onPress={() => mutate({ primarySport: selectedSport })}
-      >
-        <Text style={styles.continueButtonText}>CONTINUE</Text>
+      > {isPending ? (
+        <ActivityIndicator color="white" />
+      ) :
+        < Text style={styles.continueButtonText}>CONTINUE</Text>
+        }
       </TouchableOpacity>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 };
 

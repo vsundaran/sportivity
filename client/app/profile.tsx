@@ -1,3 +1,4 @@
+import ProfileLoadingSkeleton from "@/components/UI/loading/Profile";
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
@@ -28,7 +29,7 @@ export default function ProfileScreen() {
   const [showYearPicker, setShowYearPicker] = useState(false);
   const router = useRouter();
 
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["getProfile"],
     queryFn: GetProfile,
   });
@@ -89,6 +90,8 @@ export default function ProfileScreen() {
     (_, i) => 1975 + i
   ).reverse();
 
+  if (isLoading) return <ProfileLoadingSkeleton />
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
@@ -126,7 +129,7 @@ export default function ProfileScreen() {
 
           <View style={styles.inputGroup}>
             <Text style={styles.label}>EMAIL</Text>
-            <TextInput
+            <TextInput readOnly
               style={styles.input}
               placeholder="Enter your email"
               value={email}

@@ -1,4 +1,5 @@
-import { GetProfile, GetSkills, UpdateSkill } from "@/API/apiHandler";
+import { GetSkills, UpdateSkill } from "@/API/apiHandler";
+import SkeletonSkillAssessmentSummary from "@/components/UI/loading/skillAssessmentSummery";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -18,7 +19,7 @@ import Toast from "react-native-toast-message";
 import { GetSkillsApiResponse } from "../constant/skills/constant";
 
 const SkillAssessmentSummary = () => {
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["getSkills"],
     queryFn: GetSkills,
   });
@@ -55,7 +56,7 @@ const SkillAssessmentSummary = () => {
         type: "success",
         text1: "Sport details updated",
       });
-      router.replace("/activityList");
+      router.replace("/activity-list");
     },
     onError: (error) => {
       Toast.show({
@@ -138,22 +139,17 @@ const SkillAssessmentSummary = () => {
 
   const levelName = getLevelName(averageScore);
 
+
+  const [thik, setThik] = useState(true);
+
+  setTimeout(() => { setThik(false) }, 100000);
+
+  if (isLoading || thik) return <SkeletonSkillAssessmentSummary />
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="dark-content" />
-
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => router.navigate("/pic-sport")}
-          >
-            <MaterialCommunityIcons name="arrow-left" size={24} color="black" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Skill Assessment Summary</Text>
-        </View>
-
         <ScrollView style={styles.scrollView}>
           {/* Main Content */}
           <View style={styles.content}>
