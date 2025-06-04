@@ -140,11 +140,11 @@ const SkillAssessmentSummary = () => {
   const levelName = getLevelName(averageScore);
 
 
-  const [thik, setThik] = useState(true);
+  // const [thik, setThik] = useState(true);
 
-  setTimeout(() => { setThik(false) }, 100000);
+  // // setTimeout(() => { setThik(false) }, 100000);
 
-  if (isLoading || thik) return <SkeletonSkillAssessmentSummary />
+  if (isLoading) return <SkeletonSkillAssessmentSummary />
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

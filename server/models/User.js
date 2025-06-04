@@ -37,9 +37,13 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
-  isNewUser:{
+  isNewUser: {
     type: Boolean,
     default: true
+  },
+  profileImage: {
+    type: String,
+    default: ''
   },
   createdAt: {
     type: Date,

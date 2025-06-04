@@ -1,4 +1,5 @@
 const UserSkill = require('../models/UserSkill');
+const cloudinary = require('../utils/cloudinary');
 
 exports.createUserSkill = async (req, res) => {
     try {
