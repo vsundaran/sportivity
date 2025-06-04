@@ -1,23 +1,56 @@
-import { useToken } from "@/custom-hooks/useToken";
+import { isTokenValid } from "@/utils/jwt";
+import { getToken, removeToken } from "@/utils/token";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-const AuthContext = createContext({});
+interface AuthContextType {
+  isAuthenticated: boolean;
+  user: any;
+  login: (userData: any) => void;
+  logout: () => void;
+  isLoading: boolean;
+}
 
-export const AuthProvider = ({ children }: { children: any }) => {
+const AuthContext = createContext<AuthContextType>({
+  isAuthenticated: false,
+  user: null,
+  login: () => { },
+  logout: () => { },
+  isLoading: true,
+});
+
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const login = (userData: any) => setUser(userData);
-  const logout = () => setUser(null);
+  const login = (userData: any) => {
+    setIsAuthenticated(true);
+    setUser(userData);
+  };
 
-  let { getToken } = useToken()
+  const logout = async () => {
+    await removeToken();
+    setIsAuthenticated(false);
+    setUser(null);
+  };
+
+  const checkToken = async () => {
+    const token = await getToken();
+    if (token && isTokenValid(token)) {
+      setIsAuthenticated(true);
+    } else {
+      await removeToken();
+      setIsAuthenticated(false);
+    }
+    setIsLoading(false);
+  };
 
   useEffect(() => {
-    const token = getToken();
-    console.log(token, 'token from AuthContext');
+    checkToken();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

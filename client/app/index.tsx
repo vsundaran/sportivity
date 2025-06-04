@@ -1,5 +1,4 @@
 import { useToast } from "@/custom-hooks/useToast";
-import { useToken } from "@/custom-hooks/useToken";
 import { setToken } from "@/redux/slices/authSlice";
 import { Link, useRouter } from "expo-router";
 import { useState } from "react";
@@ -17,6 +16,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { useDispatch } from "react-redux";
 import API_ENDPOINTS from "../API/apiEndpoints";
 import apiService from "../API/apiService";
+import { saveToken } from "@/utils/token";
 
 const IC_NORMAL_SCREEN = require("../assets/images/background/normalScren.png");
 
@@ -40,8 +40,6 @@ const LoginScreen = () => {
   const { showSuccess, showError } = useToast();
   const router = useRouter();
   const dispatch = useDispatch();
-
-  let { saveToken } = useToken()
 
   const validateEmail = (email: string) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -68,7 +66,7 @@ const LoginScreen = () => {
       const response: any = await apiService.post(API_ENDPOINTS.AUTH.SEND_OTP, {
         email,
       });
-      // const response = await sendOTP(email);
+      console.log(response, "response from send otp");
       if (response?.success) {
         showSuccess("OTP Sent!", response.message || "Please check your inbox");
         setOtpSent(true);
@@ -110,7 +108,7 @@ const LoginScreen = () => {
       );
       if (response?.success) {
         showSuccess("OTP verified!!!", response.message || "");
-        saveToken(response.token || "");
+        await saveToken(response.token || "");
         dispatch(setToken(response.token || ""));
         const { isNewUser } = response?.data || {}
         if (isNewUser) {
@@ -231,7 +229,7 @@ const LoginScreen = () => {
             </TouchableOpacity>
           )}
 
-          <Link href={"/create-activity"}>Hello</Link>
+          {/* <Link href={"/create-activity"}>Hello</Link> */}
         </View>
       </View>
     </KeyboardAwareScrollView>
