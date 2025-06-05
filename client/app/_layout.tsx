@@ -4,11 +4,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import Toast from 'react-native-toast-message';
 import { Provider } from 'react-redux';
 
 import { AuthProvider, useAuth } from "@/context/AuthContext";
@@ -36,27 +35,26 @@ export default function AppLayoutWrapper() {
     </GestureHandlerRootView>
   );
 }
-
 function Layout() {
   const [appIsReady, setAppIsReady] = useState(false);
   const { isLoading, isAuthenticated } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
+    if (appIsReady && isAuthenticated) {
+      router.navigate('/activity-list');
+    }
+  }, [appIsReady, isAuthenticated]);
+
+  useEffect(() => {
     const prepare = async () => {
       if (!isLoading) {
-        // Wait for splash + auth check
         setAppIsReady(true);
         await SplashScreen.hideAsync();
-
-        // Redirect logic
-        if (isAuthenticated) {
-          router.navigate('/activity-list');
-        }
       }
     };
     prepare();
-  }, [isLoading, isAuthenticated]);
+  }, [isLoading]);
 
   if (!appIsReady || isLoading) {
     return (
@@ -69,18 +67,35 @@ function Layout() {
       </View>
     );
   }
-
   return <RootLayout />;
 }
+
 
 function RootLayout() {
   const scheme = useColorScheme();
   const theme = scheme === 'dark' ? darkTheme : lightTheme;
+  const router = useRouter();
+  const { user } = useAuth()
+
 
   return (
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="activity-list" options={getScreenOptions("Activity List")} />
+      <Stack.Screen name="activity-list" options={{
+        ...getScreenOptions("Activity List"), headerLeft: () => (
+          <TouchableOpacity onPress={() => router.push('/profile')}>
+            <Image
+              source={{ uri: user?.profileImage || "https://via.placeholder.com/32" }}
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 16,
+                marginLeft: 10,
+              }}
+            />
+          </TouchableOpacity>
+        ),
+      }} />
       <Stack.Screen name="create-activity" options={getScreenOptions("New Activity")} />
       <Stack.Screen name="pic-sport" options={getScreenOptions("Pick Your Primary Sport")} />
       <Stack.Screen name="profile" options={getScreenOptions("Profile")} />

@@ -13,7 +13,11 @@ export const GetProfile = async () => {
 
 export const UpdateProfile = async (data) => {
   try {
-    const response = await apiService.put(apiEndpoints.USER.PROFILE, data);
+    const response = await apiService.put(apiEndpoints.USER.PROFILE, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      }
+    });
     return response;
   } catch (err) {
     throw err

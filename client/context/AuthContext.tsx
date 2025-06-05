@@ -1,5 +1,7 @@
+import { GetProfile } from "@/API/apiHandler";
 import { isTokenValid } from "@/utils/jwt";
 import { getToken, removeToken } from "@/utils/token";
+import { useQuery } from "@tanstack/react-query";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface AuthContextType {
@@ -8,6 +10,7 @@ interface AuthContextType {
   login: (userData: any) => void;
   logout: () => void;
   isLoading: boolean;
+  isFetchingProfile: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -16,12 +19,44 @@ const AuthContext = createContext<AuthContextType>({
   login: () => { },
   logout: () => { },
   isLoading: true,
+  isFetchingProfile: true,
 });
 
+export interface User {
+  _id: string;
+  email: string;
+  isVerified: boolean;
+  firstName: string;
+  lastName: string;
+  gender: 'male' | 'female' | 'other'; // Adjust based on your gender enum logic
+  yearOfBirth: string;
+  shortBio: string;
+  country: string;
+  isNewUser: boolean;
+  profileImage: string;
+  createdAt: string; // or `Date` if you parse it
+  __v: number;
+}
+
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  const { data, isLoading: isFetchingProfile } = useQuery({
+    queryKey: ["getProfile"],
+    queryFn: GetProfile,
+    enabled: isAuthenticated,
+  });
+
+  useEffect(() => {
+    const userData = data as User | null | undefined;
+    if (userData) {
+      setUser(userData);
+      setIsAuthenticated(true);
+    }
+  }, [data]);
 
   const login = (userData: any) => {
     setIsAuthenticated(true);
@@ -37,10 +72,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const checkToken = async () => {
     const token = await getToken();
     if (token && isTokenValid(token)) {
-      setIsAuthenticated(true);
+      setIsAuthenticated(_ => true);
     } else {
       await removeToken();
-      setIsAuthenticated(false);
+      setIsAuthenticated(_ => false);
     }
     setIsLoading(false);
   };
@@ -50,7 +85,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, isLoading, isFetchingProfile }}>
       {children}
     </AuthContext.Provider>
   );

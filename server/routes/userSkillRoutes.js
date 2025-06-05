@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
-const userSkillController = require('../controllers/userSkillController');
+const userSkillController = require('../controllers/userSkill');
 
 router.get('/', auth, userSkillController.getUserSkill);
 router.post('/', auth, userSkillController.createUserSkill);

@@ -1,22 +1,18 @@
-"use client";
-
 import {
   FontAwesome5,
   Ionicons,
-  MaterialCommunityIcons,
-  MaterialIcons,
+  MaterialCommunityIcons
 } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
-  Image,
   SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 
 // Activity type definition
@@ -174,10 +170,10 @@ const ActivitiesList = () => {
       <StatusBar barStyle="dark-content" />
 
       {/* Header */}
-      <View style={styles.header}>
+      {/* <View style={styles.header}>
         <View style={styles.profileContainer}>
           <Image
-            source={{ uri: "https://randomuser.me/api/portraits/men/32.jpg" }}
+            source={{ uri: user?.profileImage || "https://via.placeholder.com/32" }}
             style={styles.profileImage}
           />
         </View>
@@ -185,11 +181,11 @@ const ActivitiesList = () => {
         <TouchableOpacity style={styles.mapButton}>
           <MaterialIcons name="map" size={24} color="#2196F3" />
         </TouchableOpacity>
-      </View>
+      </View> */}
 
       {/* Filters */}
       <View style={styles.filtersContainer}>
-        <View style={styles.filterRow}>
+        {/* <View style={styles.filterRow}>
           <TouchableOpacity style={styles.filterButton}>
             <Text style={styles.filterText}>{selectedSport}</Text>
             <MaterialIcons name="arrow-drop-down" size={24} color="black" />
@@ -204,14 +200,14 @@ const ActivitiesList = () => {
             <Text style={styles.filterText}>{selectedClub}</Text>
             <MaterialIcons name="arrow-drop-down" size={24} color="black" />
           </TouchableOpacity>
-        </View>
+        </View> */}
 
-        <View style={styles.bookmarkedContainer}>
+        {/* <View style={styles.bookmarkedContainer}>
           <Ionicons name="bookmark-outline" size={20} color="#757575" />
           <Text style={styles.bookmarkedText}>Bookmarked</Text>
           <Text style={styles.bookmarkedCount}>{bookmarkedCount}</Text>
           <MaterialIcons name="keyboard-arrow-down" size={24} color="#757575" />
-        </View>
+        </View> */}
       </View>
 
       {/* Activities List */}
@@ -349,7 +345,7 @@ const ActivitiesList = () => {
       </TouchableOpacity>
 
       {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
+      {/* <View style={styles.bottomNav}>
         <TouchableOpacity style={styles.navItem}>
           <Ionicons name="home-outline" size={24} color="#BDBDBD" />
         </TouchableOpacity>
@@ -366,7 +362,7 @@ const ActivitiesList = () => {
           <Ionicons name="grid-outline" size={24} color="#4CAF50" />
           <View style={styles.activeIndicator} />
         </TouchableOpacity>
-      </View>
+      </View> */}
     </SafeAreaView>
   );
 };

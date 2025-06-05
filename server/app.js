@@ -7,7 +7,7 @@ const authRoutes = require('./routes/auth');
 const profileRoutes = require('./routes/profile');
 const userSkillRoutes = require('./routes/userSkillRoutes');
 const gameSkillsRoutes = require('./routes/gameSkills');
-// const activityRoutes = require('./routes/activity');
+const activityRoutes = require('./routes/activity');
 
 const app = express();
 
@@ -28,8 +28,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/user-skill', userSkillRoutes);
 app.use('/api/game-skills', gameSkillsRoutes);
+app.use('/api/activity', activityRoutes);
 
-// app.use('/api/activity', activityRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

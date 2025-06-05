@@ -1,7 +1,9 @@
+import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/custom-hooks/useToast";
 import { setToken } from "@/redux/slices/authSlice";
+import { saveToken } from "@/utils/token";
 import { Link, useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
@@ -16,7 +18,6 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { useDispatch } from "react-redux";
 import API_ENDPOINTS from "../API/apiEndpoints";
 import apiService from "../API/apiService";
-import { saveToken } from "@/utils/token";
 
 const IC_NORMAL_SCREEN = require("../assets/images/background/normalScren.png");
 
@@ -40,6 +41,7 @@ const LoginScreen = () => {
   const { showSuccess, showError } = useToast();
   const router = useRouter();
   const dispatch = useDispatch();
+  const { isAuthenticated, isLoading } = useAuth();
 
   const validateEmail = (email: string) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -129,6 +131,17 @@ const LoginScreen = () => {
       setLoading(false);
     }
   };
+
+  //checking the auth and redirecting to activity list if authenticated
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      router.replace("/activity-list");
+    }
+  }, [isLoading, isAuthenticated]);
+
+  if (isLoading) {
+    return <ActivityIndicator />;
+  }
 
   return (
     <KeyboardAwareScrollView
@@ -229,7 +242,7 @@ const LoginScreen = () => {
             </TouchableOpacity>
           )}
 
-          {/* <Link href={"/create-activity"}>Hello</Link> */}
+          <Link href={"/create-activity"}>Hello</Link>
         </View>
       </View>
     </KeyboardAwareScrollView>
