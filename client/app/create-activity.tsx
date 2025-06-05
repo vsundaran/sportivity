@@ -665,13 +665,14 @@
 
 
 
+import { CreateActivity } from "@/API/apiHandler";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   Animated,
   Easing,
   Image,
@@ -688,6 +689,7 @@ import {
   TouchableWithoutFeedback,
   View
 } from "react-native";
+import Toast from "react-native-toast-message";
 
 type Sport = {
   id: number;
@@ -918,40 +920,50 @@ const NewActivityScreen = () => {
     }
   };
 
+
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: (formData: any) => CreateActivity(formData),
+    onSuccess: () => {
+      Toast.show({
+        type: "success",
+        text1: "Profile updated successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ['getActivity'] })
+      router.navigate("/activity-list");
+    },
+    onError: (error) => {
+      Toast.show({
+        type: "error",
+        text1: "Failed to update profile",
+        text2: error?.message || "Something went wrong",
+      });
+    },
+  });
+
   // Form submission
   const handleSubmit = async () => {
     setIsSubmitting(true);
 
-    try {
-      const activityData = {
-        sport: selectedSport.name,
-        gameType,
-        date: date.toISOString(),
-        duration,
-        venue: selectedVenue,
-        description,
-        playerSlots,
-        isPlaying,
-        attributes: selectedAttributes,
-        isPaidActivity,
-        isVenueBooked,
-        isVisibleToInvited,
-        isClubActivity,
-        players: players.map(p => p.id)
-      };
-
-      // Simulate API call
-      console.log("Submitting activity:", activityData);
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      // Alert.alert("Success", "Activity created successfully!");
-      router.navigate("/activity-list");
-    } catch (error) {
-      Alert.alert("Error", "Failed to create activity. Please try again.");
-      console.error("Error creating activity:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    const activityData = {
+      sport: selectedSport.name,
+      gameType,
+      date: date.toISOString(),
+      duration,
+      venue: selectedVenue,
+      description,
+      playerSlots,
+      isPlaying,
+      attributes: selectedAttributes,
+      isPaidActivity,
+      isVenueBooked,
+      isVisibleToInvited,
+      isClubActivity,
+      players: players.map(p => p.id)
+    };
+    mutate(activityData);
+  }
 
   // Render methods
   const renderGameTypeModal = () => (
@@ -1420,11 +1432,11 @@ const NewActivityScreen = () => {
 
         {/* Create Button */}
         <TouchableOpacity
-          style={[styles.createButton, isSubmitting && styles.createButtonDisabled]}
+          style={[styles.createButton, isPending && styles.createButtonDisabled]}
           onPress={handleSubmit}
-          disabled={isSubmitting}
+          disabled={isPending}
         >
-          {isSubmitting ? (
+          {isPending ? (
             <ActivityIndicator color="white" />
           ) : (
             <Text style={styles.createButtonText}>CREATE ACTIVITY</Text>

@@ -14,6 +14,10 @@ const API_ENDPOINTS = {
     USER_SKILL: '/user-skill',
     GET_SKILLS: '/game-skills',
   },
+  ACTIVITY: {
+    CREATE_ACTIVITY: '/activity',
+    GET_ACTIVITIES: '/activity',
+  },
 };
 
 export default API_ENDPOINTS;

@@ -1,8 +1,11 @@
+import { GetActivity } from "@/API/apiHandler";
+import ActivityListSkeleton from "@/components/UI/loading/activityList";
 import {
   FontAwesome5,
   Ionicons,
   MaterialCommunityIcons
 } from "@expo/vector-icons";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -141,6 +144,15 @@ const ActivitiesList = () => {
   const [bookmarkedCount, setBookmarkedCount] = useState(5);
 
 
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["getActivity"],
+    queryFn: GetActivity,
+  });
+  const activityResponse: any = data || null;
+
+  const activities: any = activityResponse?.activities || [];
+
   const router = useRouter();
 
   const toggleBookmark = (id: string) => {
@@ -164,6 +176,9 @@ const ActivitiesList = () => {
         return <MaterialCommunityIcons name="tennis" size={24} color="white" />;
     }
   };
+
+
+  if (isLoading) return <ActivityListSkeleton />
 
   return (
     <SafeAreaView style={styles.container}>
@@ -212,29 +227,149 @@ const ActivitiesList = () => {
 
       {/* Activities List */}
       <ScrollView style={styles.activitiesList}>
-        {activities.map((activity) => (
-          <View key={activity.id} style={styles.activityCard}>
+        {activities?.map((activity: any) => (
+          // <View key={activity.id} style={styles.activityCard}>
+          //   {/* Card Header */}
+          //   <View
+          //     style={[styles.cardHeader, { backgroundColor: activity.color }]}
+          //   >
+          //     {/* Activity Icon */}
+          //     <View style={styles.activityIconContainer}>
+          //       {getIconComponent(activity.icon)}
+          //     </View>
+
+          //     {/* Header Content */}
+          //     <View style={styles.headerContent}>
+          //       <Text style={styles.activityTitle}>{activity.title}</Text>
+
+          //       <View style={styles.locationContainer}>
+          //         <Ionicons name="location-outline" size={16} color="white" />
+          //         <Text style={styles.locationText}>{activity.location}</Text>
+          //       </View>
+
+          //       <View style={styles.ratingContainer}>
+          //         <Text style={styles.ratingText}>
+          //           {activity.skillRating.toFixed(1)} Avg Skill Rating
+          //         </Text>
+          //       </View>
+          //     </View>
+
+          //     {/* Bookmark */}
+          //     <TouchableOpacity
+          //       style={styles.bookmarkButton}
+          //       onPress={() => toggleBookmark(activity.id)}
+          //     >
+          //       <Ionicons
+          //         name={activity.isBookmarked ? "bookmark" : "bookmark-outline"}
+          //         size={24}
+          //         color="white"
+          //       />
+          //     </TouchableOpacity>
+          //   </View>
+
+          //   {/* Card Details */}
+          //   <View style={styles.cardDetails}>
+          //     {/* Date, Time, Availability */}
+          //     <View style={styles.detailsRow}>
+          //       <View style={styles.detailColumn}>
+          //         <Ionicons name="calendar-outline" size={20} color="#757575" />
+          //         <Text style={styles.detailText}>
+          //           {activity.date},{"\n"}
+          //           {activity.day}
+          //         </Text>
+          //       </View>
+
+          //       <View style={[styles.detailColumn, styles.middleColumn]}>
+          //         <Ionicons name="time-outline" size={20} color="#757575" />
+          //         <Text style={styles.detailText}>
+          //           {activity.time}
+          //           {"\n"}({activity.duration})
+          //         </Text>
+          //       </View>
+
+          //       <View style={styles.detailColumn}>
+          //         <Ionicons name="people-outline" size={20} color="#757575" />
+          //         <Text style={styles.detailText}>
+          //           {activity.available} Available
+          //           {"\n"}
+          //           {activity.total} Total
+          //         </Text>
+          //       </View>
+          //     </View>
+
+          //     {/* Status Indicators */}
+          //     <View style={styles.statusContainer}>
+          //       <View style={styles.statusItem}>
+          //         <Ionicons
+          //           name="cash-outline"
+          //           size={18}
+          //           color={activity.isPaid ? "#4CAF50" : "#BDBDBD"}
+          //         />
+          //         <Text
+          //           style={[
+          //             styles.statusText,
+          //             { color: activity.isPaid ? "#4CAF50" : "#BDBDBD" },
+          //           ]}
+          //         >
+          //           Paid
+          //         </Text>
+          //       </View>
+
+          //       <View style={styles.statusItem}>
+          //         <FontAwesome5
+          //           name="building"
+          //           size={16}
+          //           color={activity.isClub ? "#757575" : "#BDBDBD"}
+          //         />
+          //         <Text
+          //           style={[
+          //             styles.statusText,
+          //             { color: activity.isClub ? "#757575" : "#BDBDBD" },
+          //           ]}
+          //         >
+          //           Club
+          //         </Text>
+          //       </View>
+
+          //       <View style={styles.statusItem}>
+          //         <Ionicons
+          //           name="checkmark-circle-outline"
+          //           size={18}
+          //           color={activity.isBooked ? "#2196F3" : "#BDBDBD"}
+          //         />
+          //         <Text
+          //           style={[
+          //             styles.statusText,
+          //             { color: activity.isBooked ? "#2196F3" : "#BDBDBD" },
+          //           ]}
+          //         >
+          //           Booked
+          //         </Text>
+          //       </View>
+          //     </View>
+          //   </View>
+          // </View>
+
+          <View key={activity._id} style={styles.activityCard}>
             {/* Card Header */}
-            <View
-              style={[styles.cardHeader, { backgroundColor: activity.color }]}
-            >
+            <View style={[styles.cardHeader, { backgroundColor: activity.color }]}>
               {/* Activity Icon */}
               <View style={styles.activityIconContainer}>
-                {getIconComponent(activity.icon)}
+                {getIconComponent(activity.sport.toLowerCase())}
               </View>
 
               {/* Header Content */}
               <View style={styles.headerContent}>
-                <Text style={styles.activityTitle}>{activity.title}</Text>
+                <Text style={styles.activityTitle}>{activity.sport} - {activity.gameType}</Text>
 
                 <View style={styles.locationContainer}>
                   <Ionicons name="location-outline" size={16} color="white" />
-                  <Text style={styles.locationText}>{activity.location}</Text>
+                  <Text style={styles.locationText}>{activity.venue}</Text>
                 </View>
 
                 <View style={styles.ratingContainer}>
                   <Text style={styles.ratingText}>
-                    {activity.skillRating.toFixed(1)} Avg Skill Rating
+                    {activity.attributes.find((attr: any) => attr.name === "Skill Level")?.selectedOptions[0] || "N/A"} Skill Level
                   </Text>
                 </View>
               </View>
@@ -242,7 +377,7 @@ const ActivitiesList = () => {
               {/* Bookmark */}
               <TouchableOpacity
                 style={styles.bookmarkButton}
-                onPress={() => toggleBookmark(activity.id)}
+                onPress={() => toggleBookmark(activity._id)}
               >
                 <Ionicons
                   name={activity.isBookmarked ? "bookmark" : "bookmark-outline"}
@@ -259,25 +394,25 @@ const ActivitiesList = () => {
                 <View style={styles.detailColumn}>
                   <Ionicons name="calendar-outline" size={20} color="#757575" />
                   <Text style={styles.detailText}>
-                    {activity.date},{"\n"}
-                    {activity.day}
+                    {new Date(activity.date).toLocaleDateString()},{"\n"}
+                    {new Date(activity.date).toLocaleDateString(undefined, { weekday: 'long' })}
                   </Text>
                 </View>
 
                 <View style={[styles.detailColumn, styles.middleColumn]}>
                   <Ionicons name="time-outline" size={20} color="#757575" />
                   <Text style={styles.detailText}>
-                    {activity.time}
-                    {"\n"}({activity.duration})
+                    {new Date(activity.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    {"\n"}({activity.duration} hrs)
                   </Text>
                 </View>
 
                 <View style={styles.detailColumn}>
                   <Ionicons name="people-outline" size={20} color="#757575" />
                   <Text style={styles.detailText}>
-                    {activity.available} Available
+                    {activity.playerSlots - activity.players.length} Available
                     {"\n"}
-                    {activity.total} Total
+                    {activity.playerSlots} Total
                   </Text>
                 </View>
               </View>
@@ -288,12 +423,12 @@ const ActivitiesList = () => {
                   <Ionicons
                     name="cash-outline"
                     size={18}
-                    color={activity.isPaid ? "#4CAF50" : "#BDBDBD"}
+                    color={activity.isPaidActivity ? "#4CAF50" : "#BDBDBD"}
                   />
                   <Text
                     style={[
                       styles.statusText,
-                      { color: activity.isPaid ? "#4CAF50" : "#BDBDBD" },
+                      { color: activity.isPaidActivity ? "#4CAF50" : "#BDBDBD" },
                     ]}
                   >
                     Paid
@@ -304,12 +439,12 @@ const ActivitiesList = () => {
                   <FontAwesome5
                     name="building"
                     size={16}
-                    color={activity.isClub ? "#757575" : "#BDBDBD"}
+                    color={activity.isClubActivity ? "#757575" : "#BDBDBD"}
                   />
                   <Text
                     style={[
                       styles.statusText,
-                      { color: activity.isClub ? "#757575" : "#BDBDBD" },
+                      { color: activity.isClubActivity ? "#757575" : "#BDBDBD" },
                     ]}
                   >
                     Club
@@ -320,12 +455,12 @@ const ActivitiesList = () => {
                   <Ionicons
                     name="checkmark-circle-outline"
                     size={18}
-                    color={activity.isBooked ? "#2196F3" : "#BDBDBD"}
+                    color={activity.isPlaying ? "#2196F3" : "#BDBDBD"}
                   />
                   <Text
                     style={[
                       styles.statusText,
-                      { color: activity.isBooked ? "#2196F3" : "#BDBDBD" },
+                      { color: activity.isPlaying ? "#2196F3" : "#BDBDBD" },
                     ]}
                   >
                     Booked

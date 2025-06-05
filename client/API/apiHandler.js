@@ -44,3 +44,23 @@ export const GetSkills = async () => {
     throw err
   }
 };
+
+
+// activity
+export const CreateActivity = async (data) => {
+  try {
+    const response = await apiService.post(apiEndpoints.ACTIVITY.CREATE_ACTIVITY, data);
+    return response;
+  } catch (err) {
+    throw err
+  }
+}
+
+export const GetActivity = async () => {
+  try {
+    const response = await apiService.get(apiEndpoints.ACTIVITY.GET_ACTIVITIES);
+    return response;
+  } catch (err) {
+    throw err
+  }
+}
