@@ -59,11 +59,13 @@ function Layout() {
   if (!appIsReady || isLoading) {
     return (
       <View style={styles.container}>
-        <Image
-          source={require('../assets/images/splash-icon.png')}
-          style={styles.image}
-          resizeMode="contain"
-        />
+        <View style={{ overflow: 'hidden', borderRadius: 100, width: 200, height: 200 }}>
+          <Image
+            source={require('../assets/images/splash.png')}
+            style={styles.image}
+            resizeMode="cover"
+          />
+        </View>
       </View>
     );
   }
@@ -124,8 +126,10 @@ const styles = StyleSheet.create({
   },
   image: {
     flex: 1,
-    marginTop: 132,
+    maxWidth: '100%',
+    maxHeight: '100%',
     width: '100%',
-    height: '100%',
+    height: 'auto',
+    borderRadius: 100,
   },
 });

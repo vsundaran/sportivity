@@ -352,8 +352,9 @@ const ActivitiesList = () => {
 
           <View key={activity._id} style={styles.activityCard}>
             {/* Card Header */}
-            <View style={[styles.cardHeader, { backgroundColor: activity.color }]}>
+            <View style={[styles.cardHeader, { backgroundColor: activity?.color || "#2196F3" }]}>
               {/* Activity Icon */}
+
               <View style={styles.activityIconContainer}>
                 {getIconComponent(activity.sport.toLowerCase())}
               </View>
