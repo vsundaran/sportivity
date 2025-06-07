@@ -29,6 +29,10 @@
       "edgeToEdgeEnabled": true,
       "package": "com.sundaran.sportivity"
     },
+    "androidStatusBar": {
+      "backgroundColor": "#FFFFFF",
+      "barStyle": "dark-content"
+    },
     "web": {
       "bundler": "metro",
       "output": "static",
@@ -38,11 +42,11 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/splash.png",
           "resizeMode": "contain",
           "backgroundColor": "#15c5f6",
           "dark": {
-            "image": "./assets/images/splash-icon.png",
+            "image": "./assets/images/splash.png",
             "backgroundColor": "#15c5f6"
           }
         }

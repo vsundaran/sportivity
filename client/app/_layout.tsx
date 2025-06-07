@@ -5,6 +5,7 @@ import { Stack, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -81,28 +82,35 @@ function RootLayout() {
 
 
   return (
-    <Stack>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="activity-list" options={{
-        ...getScreenOptions("Activity List"), headerLeft: () => (
-          <TouchableOpacity onPress={() => router.push('/profile')}>
-            <Image
-              source={{ uri: user?.profileImage || "https://via.placeholder.com/32" }}
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: 16,
-                marginLeft: 10,
-              }}
-            />
-          </TouchableOpacity>
-        ),
-      }} />
-      <Stack.Screen name="create-activity" options={getScreenOptions("New Activity")} />
-      <Stack.Screen name="pic-sport" options={getScreenOptions("Pick Your Primary Sport")} />
-      <Stack.Screen name="profile" options={getScreenOptions("Profile")} />
-      <Stack.Screen name="skill-assessment" options={getScreenOptions("Skill Assessment Summary")} />
-    </Stack>
+    <>
+      <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
+      <Stack screenOptions={{
+        contentStyle: {
+          backgroundColor: '#ffffff'
+        }
+      }}>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="activity-list" options={{
+          ...getScreenOptions("Activity List"), headerLeft: () => (
+            <TouchableOpacity onPress={() => router.push('/profile')}>
+              <Image
+                source={{ uri: user?.profileImage || "https://via.placeholder.com/32" }}
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 16,
+                  marginLeft: 10,
+                }}
+              />
+            </TouchableOpacity>
+          ),
+        }} />
+        <Stack.Screen name="create-activity" options={getScreenOptions("New Activity")} />
+        <Stack.Screen name="pic-sport" options={getScreenOptions("Pick Your Primary Sport")} />
+        <Stack.Screen name="profile" options={getScreenOptions("Profile")} />
+        <Stack.Screen name="skill-assessment" options={getScreenOptions("Skill Assessment Summary")} />
+      </Stack>
+    </>
   );
 }
 
