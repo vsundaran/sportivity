@@ -1,14 +1,14 @@
-// Layout.tsx
+
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import React, { useEffect, useState } from 'react';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Provider as PaperProvider } from 'react-native-paper';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
 
 import { AuthProvider, useAuth } from "@/context/AuthContext";
@@ -83,6 +83,7 @@ function RootLayout() {
 
   return (
     <>
+      {/* <SafeAreaView style={{ flex: 1 }} edges={['top']}> */}
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
       <Stack screenOptions={{
         contentStyle: {
@@ -93,15 +94,33 @@ function RootLayout() {
         <Stack.Screen name="activity-list" options={{
           ...getScreenOptions("Activity List"), headerLeft: () => (
             <TouchableOpacity onPress={() => router.push('/profile')}>
-              <Image
-                source={{ uri: user?.profileImage || "https://via.placeholder.com/32" }}
-                style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: 16,
-                  marginLeft: 10,
-                }}
-              />
+              {user?.profileImage ? (
+                <Image
+                  source={{ uri: user.profileImage }}
+                  style={{
+                    width: 42,
+                    height: 42,
+                    marginLeft: 10,
+                    borderRadius: 100,
+                  }}
+                />
+              ) : (
+                <View
+                  style={{
+                    width: 46,
+                    height: 46,
+                    marginLeft: 10,
+                    borderRadius: 100,
+                    backgroundColor: '#bdbdbd',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Text style={{ color: '#fff', fontSize: 22, fontWeight: 'bold' }}>
+                    {user?.firstName?.[0]?.toUpperCase() || ''}
+                  </Text>
+                </View>
+              )}
             </TouchableOpacity>
           ),
         }} />
@@ -110,6 +129,7 @@ function RootLayout() {
         <Stack.Screen name="profile" options={getScreenOptions("Profile")} />
         <Stack.Screen name="skill-assessment" options={getScreenOptions("Skill Assessment Summary")} />
       </Stack>
+      {/* </SafeAreaView > */}
     </>
   );
 }
@@ -122,6 +142,7 @@ const getScreenOptions = (title: string) => ({
     color: darkTheme.colors.primary,
   },
   headerShadowVisible: false,
+  headerStatusBarHeight: 0,
 });
 
 const styles = StyleSheet.create({

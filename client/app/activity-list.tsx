@@ -368,11 +368,14 @@ const ActivitiesList = () => {
                   <Text style={styles.locationText}>{activity.venue}</Text>
                 </View>
 
-                <View style={styles.ratingContainer}>
-                  <Text style={styles.ratingText}>
-                    {activity.attributes.find((attr: any) => attr.name === "Skill Level")?.selectedOptions[0] || "N/A"} Skill Level
-                  </Text>
-                </View>
+                {
+                  activity.attributes.find((attr: any) => attr.name === "Skill Level")?.selectedOptions[0] ? <View style={styles.ratingContainer}>
+                    <Text style={styles.ratingText}>
+                      {activity.attributes.find((attr: any) => attr.name === "Skill Level")?.selectedOptions[0]} Skill Level
+                    </Text>
+                  </View> : null
+                }
+
               </View>
 
               {/* Bookmark */}
@@ -409,7 +412,7 @@ const ActivitiesList = () => {
                 </View>
 
                 <View style={styles.detailColumn}>
-                  <Ionicons name="people-outline" size={20} color="#757575" />
+                  <Ionicons name="people-outline" size={20} style={{ marginLeft: 10 }} color="#757575" />
                   <Text style={styles.detailText}>
                     {activity.playerSlots - activity.players.length} Available
                     {"\n"}
@@ -436,7 +439,7 @@ const ActivitiesList = () => {
                   </Text>
                 </View>
 
-                <View style={styles.statusItem}>
+                {/* <View style={styles.statusItem}>
                   <FontAwesome5
                     name="building"
                     size={16}
@@ -450,7 +453,7 @@ const ActivitiesList = () => {
                   >
                     Club
                   </Text>
-                </View>
+                </View> */}
 
                 <View style={styles.statusItem}>
                   <Ionicons
@@ -654,8 +657,8 @@ const styles = StyleSheet.create({
   },
   statusContainer: {
     flexDirection: "row",
-    borderTopWidth: 1,
-    borderTopColor: "#EEEEEE",
+    // borderTopWidth: 1,
+    // borderTopColor: "#EEEEEE",
     paddingTop: 12,
     paddingBottom: 4,
   },
@@ -726,7 +729,6 @@ const styles = StyleSheet.create({
   detailsRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 16,
     borderBottomWidth: 1,
     borderBottomColor: "#EEEEEE",
     paddingBottom: 16,

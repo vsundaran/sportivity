@@ -674,9 +674,9 @@ const NewActivityScreen = () => {
         <View style={styles.section}>
           <View style={styles.playerListHeader}>
             <Text style={styles.sectionTitle}>PLAYER LIST</Text>
-            <TouchableOpacity>
+            {/* <TouchableOpacity>
               <Text style={styles.inviteText}>INVITE PLAYERS</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
 
           <View style={styles.playerList}>
