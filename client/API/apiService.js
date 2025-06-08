@@ -1,8 +1,6 @@
 import axios from 'axios';
 import { Platform } from 'react-native';
 // import { getUniqueId } from 'react-native-device-info';
-import { store } from "../redux/store/index";
-import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 import { getToken } from '@/utils/token';
 
 // Base URL configuration

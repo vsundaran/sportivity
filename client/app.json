@@ -1,10 +1,19 @@
 {
   "expo": {
-    "name": "sportivity",
+    "name": "sportyvity",
     "slug": "sportivity",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff",
+      "dark": {
+        "image": "./assets/images/splash.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
     "scheme": "sportivity",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -44,11 +53,11 @@
         "expo-splash-screen",
         {
           "image": "./assets/images/splash.png",
-          "resizeMode": "contain",
-          "backgroundColor": "#15c5f6",
+          "resizeMode": "cover",
+          "backgroundColor": "#2296f3",
           "dark": {
             "image": "./assets/images/splash.png",
-            "backgroundColor": "#15c5f6"
+            "backgroundColor": "#2296f3"
           }
         }
       ]
