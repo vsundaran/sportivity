@@ -60,13 +60,13 @@ function Layout() {
   if (!appIsReady || isLoading) {
     return (
       <View style={styles.container}>
-        <View style={{ overflow: 'hidden', borderRadius: 100, width: 200, height: 200 }}>
-          <Image
-            source={require('../assets/images/splash.png')}
-            style={styles.image}
-            resizeMode="cover"
-          />
-        </View>
+        {/* <View style={{ overflow: 'hidden', width: 200, height: 200 }}> */}
+        <Image
+          source={require('../assets/images/splash.png')}
+          style={styles.image}
+          resizeMode="contain"
+        />
+        {/* </View> */}
       </View>
     );
   }
@@ -78,59 +78,66 @@ function RootLayout() {
   const scheme = useColorScheme();
   const theme = scheme === 'dark' ? darkTheme : lightTheme;
   const router = useRouter();
-  const { user } = useAuth()
-
+  const { user } = useAuth();
 
   return (
+    // <SafeAreaView style={{ flex: 1 }} edges={['top']}>
     <>
-      {/* <SafeAreaView style={{ flex: 1 }} edges={['top']}> */}
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
-      <Stack screenOptions={{
-        contentStyle: {
-          backgroundColor: '#ffffff'
-        }
-      }}>
+      <Stack
+        screenOptions={{
+          contentStyle: {
+            backgroundColor: '#ffffff',
+          },
+        }}
+      >
         <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="activity-list" options={{
-          ...getScreenOptions("Activity List"), headerLeft: () => (
-            <TouchableOpacity onPress={() => router.push('/profile')}>
-              {user?.profileImage ? (
-                <Image
-                  source={{ uri: user.profileImage }}
-                  style={{
-                    width: 42,
-                    height: 42,
-                    marginLeft: 10,
-                    borderRadius: 100,
-                  }}
-                />
-              ) : (
-                <View
-                  style={{
-                    width: 46,
-                    height: 46,
-                    marginLeft: 10,
-                    borderRadius: 100,
-                    backgroundColor: '#bdbdbd',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Text style={{ color: '#fff', fontSize: 22, fontWeight: 'bold' }}>
-                    {user?.firstName?.[0]?.toUpperCase() || ''}
-                  </Text>
-                </View>
-              )}
-            </TouchableOpacity>
-          ),
-        }} />
+        <Stack.Screen
+          name="activity-list"
+          options={{
+            ...getScreenOptions("Activity List"),
+            headerLeft: () => (
+              <TouchableOpacity onPress={() => router.push('/profile')}>
+                {user?.profileImage ? (
+                  <Image
+                    source={{ uri: user.profileImage }}
+                    style={{
+                      width: 42,
+                      height: 42,
+                      marginLeft: 10,
+                      borderRadius: 100,
+                    }}
+                  />
+                ) : (
+                  <View
+                    style={{
+                      width: 46,
+                      height: 46,
+                      marginLeft: 10,
+                      borderRadius: 100,
+                      backgroundColor: '#bdbdbd',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Text
+                      style={{ color: '#fff', fontSize: 22 }}
+                    >
+                      {user?.firstName?.[0]?.toUpperCase() || ''}
+                    </Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            ),
+          }}
+        />
         <Stack.Screen name="create-activity" options={getScreenOptions("New Activity")} />
         <Stack.Screen name="pic-sport" options={getScreenOptions("Pick Your Primary Sport")} />
         <Stack.Screen name="profile" options={getScreenOptions("Profile")} />
         <Stack.Screen name="skill-assessment" options={getScreenOptions("Skill Assessment Summary")} />
       </Stack>
-      {/* </SafeAreaView > */}
     </>
+    // </SafeAreaView >
   );
 }
 
@@ -141,8 +148,12 @@ const getScreenOptions = (title: string) => ({
   headerTitleStyle: {
     color: darkTheme.colors.primary,
   },
+  headerStyle: {
+    height: 60, // Set a specific height for the header
+    backgroundColor: '#ffffff',
+  },
   headerShadowVisible: false,
-  headerStatusBarHeight: 0,
+  // headerStatusBarHeight: 0,
 });
 
 const styles = StyleSheet.create({
@@ -159,6 +170,5 @@ const styles = StyleSheet.create({
     maxHeight: '100%',
     width: '100%',
     height: 'auto',
-    borderRadius: 100,
   },
 });

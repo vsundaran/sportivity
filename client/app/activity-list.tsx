@@ -9,7 +9,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
-  SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -17,6 +16,8 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
+
+import { SafeAreaView } from "react-native-safe-area-context";
 
 // Activity type definition
 type Activity = {
@@ -181,175 +182,10 @@ const ActivitiesList = () => {
   if (isLoading) return <ActivityListSkeleton />
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
-
-      {/* Header */}
-      {/* <View style={styles.header}>
-        <View style={styles.profileContainer}>
-          <Image
-            source={{ uri: user?.profileImage || "https://via.placeholder.com/32" }}
-            style={styles.profileImage}
-          />
-        </View>
-        <Text style={styles.headerTitle}>Activities</Text>
-        <TouchableOpacity style={styles.mapButton}>
-          <MaterialIcons name="map" size={24} color="#2196F3" />
-        </TouchableOpacity>
-      </View> */}
-
-      {/* Filters */}
-      <View style={styles.filtersContainer}>
-        {/* <View style={styles.filterRow}>
-          <TouchableOpacity style={styles.filterButton}>
-            <Text style={styles.filterText}>{selectedSport}</Text>
-            <MaterialIcons name="arrow-drop-down" size={24} color="black" />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.filterButton}>
-            <Text style={styles.filterText}>{selectedTime}</Text>
-            <MaterialIcons name="arrow-drop-down" size={24} color="black" />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.filterButton}>
-            <Text style={styles.filterText}>{selectedClub}</Text>
-            <MaterialIcons name="arrow-drop-down" size={24} color="black" />
-          </TouchableOpacity>
-        </View> */}
-
-        {/* <View style={styles.bookmarkedContainer}>
-          <Ionicons name="bookmark-outline" size={20} color="#757575" />
-          <Text style={styles.bookmarkedText}>Bookmarked</Text>
-          <Text style={styles.bookmarkedCount}>{bookmarkedCount}</Text>
-          <MaterialIcons name="keyboard-arrow-down" size={24} color="#757575" />
-        </View> */}
-      </View>
-
+    <View style={{ flex: 1 }}>
       {/* Activities List */}
       <ScrollView style={styles.activitiesList}>
         {activities?.map((activity: any) => (
-          // <View key={activity.id} style={styles.activityCard}>
-          //   {/* Card Header */}
-          //   <View
-          //     style={[styles.cardHeader, { backgroundColor: activity.color }]}
-          //   >
-          //     {/* Activity Icon */}
-          //     <View style={styles.activityIconContainer}>
-          //       {getIconComponent(activity.icon)}
-          //     </View>
-
-          //     {/* Header Content */}
-          //     <View style={styles.headerContent}>
-          //       <Text style={styles.activityTitle}>{activity.title}</Text>
-
-          //       <View style={styles.locationContainer}>
-          //         <Ionicons name="location-outline" size={16} color="white" />
-          //         <Text style={styles.locationText}>{activity.location}</Text>
-          //       </View>
-
-          //       <View style={styles.ratingContainer}>
-          //         <Text style={styles.ratingText}>
-          //           {activity.skillRating.toFixed(1)} Avg Skill Rating
-          //         </Text>
-          //       </View>
-          //     </View>
-
-          //     {/* Bookmark */}
-          //     <TouchableOpacity
-          //       style={styles.bookmarkButton}
-          //       onPress={() => toggleBookmark(activity.id)}
-          //     >
-          //       <Ionicons
-          //         name={activity.isBookmarked ? "bookmark" : "bookmark-outline"}
-          //         size={24}
-          //         color="white"
-          //       />
-          //     </TouchableOpacity>
-          //   </View>
-
-          //   {/* Card Details */}
-          //   <View style={styles.cardDetails}>
-          //     {/* Date, Time, Availability */}
-          //     <View style={styles.detailsRow}>
-          //       <View style={styles.detailColumn}>
-          //         <Ionicons name="calendar-outline" size={20} color="#757575" />
-          //         <Text style={styles.detailText}>
-          //           {activity.date},{"\n"}
-          //           {activity.day}
-          //         </Text>
-          //       </View>
-
-          //       <View style={[styles.detailColumn, styles.middleColumn]}>
-          //         <Ionicons name="time-outline" size={20} color="#757575" />
-          //         <Text style={styles.detailText}>
-          //           {activity.time}
-          //           {"\n"}({activity.duration})
-          //         </Text>
-          //       </View>
-
-          //       <View style={styles.detailColumn}>
-          //         <Ionicons name="people-outline" size={20} color="#757575" />
-          //         <Text style={styles.detailText}>
-          //           {activity.available} Available
-          //           {"\n"}
-          //           {activity.total} Total
-          //         </Text>
-          //       </View>
-          //     </View>
-
-          //     {/* Status Indicators */}
-          //     <View style={styles.statusContainer}>
-          //       <View style={styles.statusItem}>
-          //         <Ionicons
-          //           name="cash-outline"
-          //           size={18}
-          //           color={activity.isPaid ? "#4CAF50" : "#BDBDBD"}
-          //         />
-          //         <Text
-          //           style={[
-          //             styles.statusText,
-          //             { color: activity.isPaid ? "#4CAF50" : "#BDBDBD" },
-          //           ]}
-          //         >
-          //           Paid
-          //         </Text>
-          //       </View>
-
-          //       <View style={styles.statusItem}>
-          //         <FontAwesome5
-          //           name="building"
-          //           size={16}
-          //           color={activity.isClub ? "#757575" : "#BDBDBD"}
-          //         />
-          //         <Text
-          //           style={[
-          //             styles.statusText,
-          //             { color: activity.isClub ? "#757575" : "#BDBDBD" },
-          //           ]}
-          //         >
-          //           Club
-          //         </Text>
-          //       </View>
-
-          //       <View style={styles.statusItem}>
-          //         <Ionicons
-          //           name="checkmark-circle-outline"
-          //           size={18}
-          //           color={activity.isBooked ? "#2196F3" : "#BDBDBD"}
-          //         />
-          //         <Text
-          //           style={[
-          //             styles.statusText,
-          //             { color: activity.isBooked ? "#2196F3" : "#BDBDBD" },
-          //           ]}
-          //         >
-          //           Booked
-          //         </Text>
-          //       </View>
-          //     </View>
-          //   </View>
-          // </View>
-
           <View key={activity._id} style={styles.activityCard}>
             {/* Card Header */}
             <View style={[styles.cardHeader, { backgroundColor: activity?.color || "#2196F3" }]}>
@@ -439,22 +275,6 @@ const ActivitiesList = () => {
                   </Text>
                 </View>
 
-                {/* <View style={styles.statusItem}>
-                  <FontAwesome5
-                    name="building"
-                    size={16}
-                    color={activity.isClubActivity ? "#757575" : "#BDBDBD"}
-                  />
-                  <Text
-                    style={[
-                      styles.statusText,
-                      { color: activity.isClubActivity ? "#757575" : "#BDBDBD" },
-                    ]}
-                  >
-                    Club
-                  </Text>
-                </View> */}
-
                 <View style={styles.statusItem}>
                   <Ionicons
                     name="checkmark-circle-outline"
@@ -483,26 +303,7 @@ const ActivitiesList = () => {
         <Ionicons name="add" size={24} color="white" />
       </TouchableOpacity>
 
-      {/* Bottom Navigation */}
-      {/* <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="home-outline" size={24} color="#BDBDBD" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="calendar-outline" size={24} color="#BDBDBD" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="people-outline" size={24} color="#BDBDBD" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="notifications-outline" size={24} color="#BDBDBD" />
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.navItem, styles.activeNavItem]}>
-          <Ionicons name="grid-outline" size={24} color="#4CAF50" />
-          <View style={styles.activeIndicator} />
-        </TouchableOpacity>
-      </View> */}
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -616,7 +417,6 @@ const styles = StyleSheet.create({
   },
   activityTitle: {
     fontSize: 18,
-    fontWeight: "600",
     color: "white",
     marginBottom: 4,
   },
@@ -639,7 +439,6 @@ const styles = StyleSheet.create({
   },
   ratingText: {
     fontSize: 12,
-    fontWeight: "500",
     color: "white",
   },
   detailsContainer: {
@@ -739,11 +538,11 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
   middleColumn: {
-    borderLeftWidth: 1,
-    borderRightWidth: 1,
-    borderLeftColor: "#EEEEEE",
-    borderRightColor: "#EEEEEE",
-    paddingHorizontal: 16,
+    // borderLeftWidth: 1,
+    // borderRightWidth: 1,
+    // borderLeftColor: "#EEEEEE",
+    // borderRightColor: "#EEEEEE",
+    // paddingHorizontal: 16,
     justifyContent: "center",
   },
 });

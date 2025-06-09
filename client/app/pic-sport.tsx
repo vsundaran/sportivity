@@ -88,9 +88,7 @@ const SportSelectionScreen = () => {
   };
 
   return (
-
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+    <View style={styles.container}>
       {/* Tabs */}
       <View style={styles.tabContainer}>
         <TouchableOpacity
@@ -143,13 +141,15 @@ const SportSelectionScreen = () => {
       <TouchableOpacity
         style={styles.continueButton}
         onPress={() => mutate({ primarySport: selectedSport })}
-      > {isPending ? (
-        <ActivityIndicator color="white" />
-      ) :
-        < Text style={styles.continueButtonText}>CONTINUE</Text>
-        }
+      >
+        {isPending ? (
+          <ActivityIndicator color="white" />
+        ) : (
+          <Text style={styles.continueButtonText}>CONTINUE</Text>
+        )}
       </TouchableOpacity>
-    </SafeAreaView >
+
+    </View >
   );
 };
 
@@ -254,9 +254,8 @@ const styles = StyleSheet.create({
     right: 16,
   },
   continueButtonText: {
-    color: "white",
     fontSize: 16,
-    fontWeight: "600",
+    color: "white",
   },
 });
 

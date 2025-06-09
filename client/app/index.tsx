@@ -260,9 +260,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   mainView: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    flex: 1,
   },
   inputContainer: {
     width: "90%",

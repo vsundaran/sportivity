@@ -148,8 +148,7 @@ const SkillAssessmentSummary = () => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="dark-content" />
+      <View style={styles.container}>
         <ScrollView style={styles.scrollView}>
           {/* Main Content */}
           <View style={styles.content}>
@@ -198,7 +197,7 @@ const SkillAssessmentSummary = () => {
             <Text style={styles.exploreButtonText}>EXPLORE ACTIVITIES</Text>
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
+      </View>
     </GestureHandlerRootView>
   );
 };
@@ -329,9 +328,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   exploreButtonText: {
-    color: "white",
     fontSize: 16,
-    fontWeight: "600",
+    color: "white",
   },
 });
 

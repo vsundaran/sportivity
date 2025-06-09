@@ -3,17 +3,14 @@ import { CreateActivity } from "@/API/apiHandler";
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   Animated,
   Easing,
   Image,
   Modal,
-  Platform,
-  SafeAreaView,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Switch,
   Text,
@@ -24,6 +21,8 @@ import {
 } from "react-native";
 import Toast from "react-native-toast-message"
 import useDateTimePicker from "@/custom-hooks/datePicker";
+import { useFocusEffect } from "@react-navigation/native";
+// import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 
 type Sport = {
@@ -140,7 +139,6 @@ const NewActivityScreen = () => {
   const [isClubActivity, setIsClubActivity] = useState(false);
   const [animation] = useState(new Animated.Value(0));
   const [gameType, setGameType] = useState(gameTypes[0]);
-  const [date, setDate] = useState(new Date());
   const [description, setDescription] = useState("");
   const [selectedVenue, setSelectedVenue] = useState("");
   const [selectedAttributes, setSelectedAttributes] = useState<SelectedAttribute[]>([]);
@@ -209,6 +207,55 @@ const NewActivityScreen = () => {
     transform: [{ scale: scaleInterpolation }],
   };
 
+
+  const resetForm = useCallback(() => {
+    setSelectedSport(sports[0]);
+    setDuration(6);
+    setPlayerSlots(6);
+    setIsPlaying(true);
+    setIsPaidActivity(false);
+    setIsVenueBooked(false);
+    setIsVisibleToInvited(false);
+    setIsClubActivity(false);
+    setGameType(gameTypes[0]);
+    setDescription("");
+    setSelectedVenue("");
+    setSelectedAttributes([]);
+    setPlayers([
+      {
+        id: 1,
+        name: "You",
+        rating: 4.5,
+        image: "https://i.pravatar.cc/100?img=1",
+      },
+      {
+        id: 2,
+        name: "Janely",
+        rating: 4.5,
+        image: "https://i.pravatar.cc/100?img=5",
+      },
+      {
+        id: 3,
+        name: "Kristine",
+        rating: 4.3,
+        image: "https://i.pravatar.cc/100?img=9",
+      },
+      {
+        id: 4,
+        name: "V",
+        rating: 4.7,
+        image: "https://i.pravatar.cc/100?img=3"
+      },
+    ]);
+  }, []);
+
+  // Reset form when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      resetForm();
+    }, [resetForm])
+  );
+
   // Attribute handling
   const handleAddAttribute = () => {
     if (attributes.length > selectedAttributes.length) {
@@ -250,33 +297,33 @@ const NewActivityScreen = () => {
   };
 
 
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
     mutationFn: (formData: any) => CreateActivity(formData),
     onSuccess: () => {
-      Toast.show({
-        type: "success",
-        text1: "Profile updated successfully",
-      });
-      queryClient.invalidateQueries({ queryKey: ['getActivity'] })
+      // Toast.show({
+      //   type: "success",
+      //   text1: "Profile updated successfully",
+      // });
+      // queryClient.invalidateQueries({ queryKey: ['getActivity'] })
       router.navigate("/activity-list");
     },
-    onError: (error) => {
-      Toast.show({
-        type: "error",
-        text1: "Failed to update profile",
-        text2: error?.message || "Something went wrong",
-      });
-    },
+    // onError: (error) => {
+    //   Toast.show({
+    //     type: "error",
+    //     text1: "Failed to update profile",
+    //     text2: error?.message || "Something went wrong",
+    //   });
+    // },
   });
 
   // Form submission
   const handleSubmit = async () => {
     const activityData = {
-      sport: selectedSport.name,
+      sport: selectedSport?.name,
       gameType,
-      date: selectedDateAndTime.toISOString(),
+      date: selectedDateAndTime?.toISOString(),
       duration,
       venue: selectedVenue,
       description,
@@ -287,7 +334,7 @@ const NewActivityScreen = () => {
       isVenueBooked,
       isVisibleToInvited,
       isClubActivity,
-      players: players.map(p => p.id)
+      players: players?.map(p => p.id)
     };
     mutate(activityData);
   }
@@ -439,8 +486,14 @@ const NewActivityScreen = () => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+    // <KeyboardAwareScrollView
+    //   style={{ flex: 1 }}
+    //   contentContainerStyle={{ flexGrow: 1 }}
+    //   enableOnAndroid
+    //   keyboardShouldPersistTaps="handled"
+    // >
+
+    <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
         {/* Sport Selection */}
         <View style={styles.section}>
@@ -545,7 +598,7 @@ const NewActivityScreen = () => {
                 style={styles.inputIcon}
               />
               <Text style={styles.inputText}>
-                {selectedDateAndTime.toLocaleString()}
+                {selectedDateAndTime?.toLocaleString() || "Select date and time"}
               </Text>
             </TouchableOpacity>
           </View>
@@ -764,7 +817,8 @@ const NewActivityScreen = () => {
       {renderVenueModal()}
       {renderAttributeModal()}
       {renderOptionsModal()}
-    </SafeAreaView>
+    </View>
+    // </KeyboardAwareScrollView>
   );
 };
 
@@ -1005,7 +1059,6 @@ const styles = StyleSheet.create({
   },
   createButtonText: {
     color: "white",
-    fontWeight: "bold",
     fontSize: 16,
   },
   bottomPadding: {
@@ -1073,7 +1126,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     marginRight: 5,
-    marginBottom: 5,
+    marginTop: 2,
   },
   attributeOptionText: {
     fontSize: 12,
