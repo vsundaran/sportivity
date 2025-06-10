@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Provider as PaperProvider } from 'react-native-paper';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
 
 import { AuthProvider, useAuth } from "@/context/AuthContext";
@@ -135,6 +135,7 @@ function RootLayout() {
         <Stack.Screen name="pic-sport" options={getScreenOptions("Pick Your Primary Sport")} />
         <Stack.Screen name="profile" options={getScreenOptions("Profile")} />
         <Stack.Screen name="skill-assessment" options={getScreenOptions("Skill Assessment Summary")} />
+        <Stack.Screen name="invite-player" options={getScreenOptions("Invite players")} />
       </Stack>
     </>
     // </SafeAreaView >

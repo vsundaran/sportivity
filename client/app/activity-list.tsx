@@ -76,8 +76,8 @@ const ActivitiesList = () => {
                 <Text style={styles.activityTitle}>{activity.sport} - {activity.gameType}</Text>
 
                 <View style={styles.locationContainer}>
-                  <Ionicons name="location-outline" size={16} color="white" />
-                  <Text style={styles.locationText}>{activity.venue}</Text>
+                  <Ionicons name="location-outline" style={{ marginTop: 3 }} size={16} color="white" />
+                  <Text style={styles.locationText}>{activity?.venue?.address || ""}</Text>
                 </View>
 
                 {
@@ -174,7 +174,8 @@ const ActivitiesList = () => {
 
       {/* Floating Action Button */}
       <TouchableOpacity style={styles.fab}
-        onPress={() => router.navigate("/create-activity")}
+        onPress={() => router.replace("/invite-player")}
+      // onPress={() => router.navigate("/test")}
       >
         <Ionicons name="add" size={24} color="white" />
       </TouchableOpacity>
@@ -298,7 +299,7 @@ const styles = StyleSheet.create({
   },
   locationContainer: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
     marginBottom: 6,
   },
   locationText: {

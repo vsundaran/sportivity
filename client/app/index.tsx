@@ -2,7 +2,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/custom-hooks/useToast";
 import { setToken } from "@/redux/slices/authSlice";
 import { saveToken } from "@/utils/token";
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -242,7 +242,7 @@ const LoginScreen = () => {
             </TouchableOpacity>
           )}
 
-          {/* <Link href={"/create-activity"}>Hello</Link> */}
+          <Link href={"/test"}>Hello</Link>
         </View>
       </View>
     </KeyboardAwareScrollView>

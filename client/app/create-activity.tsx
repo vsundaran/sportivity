@@ -1,5 +1,6 @@
 
 import { CreateActivity } from "@/API/apiHandler";
+import LocationSelector from "@/components/UI/map";
 import useDateTimePicker from "@/custom-hooks/datePicker";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
@@ -219,7 +220,7 @@ const NewActivityScreen = () => {
     setIsClubActivity(false);
     setGameType(gameTypes[0]);
     setDescription("");
-    setSelectedVenue("");
+    setVenueLocation(null);
     setSelectedAttributes([]);
     setPlayers([
       {
@@ -326,7 +327,7 @@ const NewActivityScreen = () => {
       gameType,
       date: selectedDateAndTime?.toISOString(),
       duration,
-      venue: selectedVenue,
+      venue: venueLocation,
       description,
       playerSlots,
       isPlaying,
@@ -340,6 +341,12 @@ const NewActivityScreen = () => {
     mutate(activityData);
   }
 
+  const [venueLocation, setVenueLocation] = useState<{ latitude: number; longitude: number; address?: string } | null>(null);
+
+  const selectLocation = (coords: { "address": string, "latitude": number, "longitude": number }) => {
+    setVenueLocation(coords);
+    console.log(coords, "Selected location coordinates");
+  }
 
 
   // Render methods
@@ -374,36 +381,6 @@ const NewActivityScreen = () => {
     </Modal>
   );
 
-  const renderVenueModal = () => (
-    <Modal
-      visible={showVenueModal}
-      transparent
-      animationType="slide"
-      onRequestClose={() => setShowVenueModal(false)}
-    >
-      <TouchableWithoutFeedback onPress={() => setShowVenueModal(false)}>
-        <View style={styles.modalOverlay} />
-      </TouchableWithoutFeedback>
-      <View style={styles.modalContent}>
-        <Text style={styles.modalTitle}>Select Venue</Text>
-        {venues.map(venue => (
-          <TouchableOpacity
-            key={venue}
-            style={styles.modalOption}
-            onPress={() => {
-              setSelectedVenue(venue);
-              setShowVenueModal(false);
-            }}
-          >
-            <Text style={styles.modalOptionText}>{venue}</Text>
-            {selectedVenue === venue && (
-              <Ionicons name="checkmark" size={20} color="#3498db" />
-            )}
-          </TouchableOpacity>
-        ))}
-      </View>
-    </Modal>
-  );
 
   const renderAttributeModal = () => (
     <Modal
@@ -487,15 +464,10 @@ const NewActivityScreen = () => {
   );
 
   return (
-    // <KeyboardAwareScrollView
-    //   style={{ flex: 1 }}
-    //   contentContainerStyle={{ flexGrow: 1 }}
-    //   enableOnAndroid
-    //   keyboardShouldPersistTaps="handled"
-    // >
 
     <View style={styles.container}>
-      <ScrollView style={styles.scrollView}>
+      {/* <LocationSelector /> */}
+      <ScrollView style={styles.scrollView} scrollEnabled={true}>
         {/* Sport Selection */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>CHOOSE A SPORT</Text>
@@ -631,7 +603,7 @@ const NewActivityScreen = () => {
         </View>
 
         {/* Venue */}
-        <View style={styles.section}>
+        {/* <View style={styles.section}>
           <Text style={styles.sectionTitle}>VENUE</Text>
           <TouchableOpacity
             style={styles.input}
@@ -641,6 +613,13 @@ const NewActivityScreen = () => {
               {selectedVenue || "Select Venue"}
             </Text>
           </TouchableOpacity>
+        </View> */}
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>VENUE</Text>
+          <View style={{ height: 350, borderRadius: 8, overflow: "hidden", marginTop: 10 }}>
+            <LocationSelector onSelect={selectLocation} />
+          </View>
         </View>
 
         {/* Description */}
@@ -728,9 +707,9 @@ const NewActivityScreen = () => {
         <View style={styles.section}>
           <View style={styles.playerListHeader}>
             <Text style={styles.sectionTitle}>PLAYER LIST</Text>
-            {/* <TouchableOpacity>
+            <TouchableOpacity>
               <Text style={styles.inviteText}>INVITE PLAYERS</Text>
-            </TouchableOpacity> */}
+            </TouchableOpacity>
           </View>
 
           <View style={styles.playerList}>
@@ -815,11 +794,9 @@ const NewActivityScreen = () => {
 
       {/* Modals */}
       {renderGameTypeModal()}
-      {renderVenueModal()}
       {renderAttributeModal()}
       {renderOptionsModal()}
     </View>
-    // </KeyboardAwareScrollView>
   );
 };
 
