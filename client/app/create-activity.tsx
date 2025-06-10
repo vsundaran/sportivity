@@ -1,6 +1,8 @@
 
 import { CreateActivity } from "@/API/apiHandler";
+import useDateTimePicker from "@/custom-hooks/datePicker";
 import { Ionicons } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
@@ -19,9 +21,7 @@ import {
   TouchableWithoutFeedback,
   View
 } from "react-native";
-import Toast from "react-native-toast-message"
-import useDateTimePicker from "@/custom-hooks/datePicker";
-import { useFocusEffect } from "@react-navigation/native";
+import Toast from "react-native-toast-message";
 // import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 
@@ -297,25 +297,26 @@ const NewActivityScreen = () => {
   };
 
 
-  // const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
     mutationFn: (formData: any) => CreateActivity(formData),
     onSuccess: () => {
-      // Toast.show({
-      //   type: "success",
-      //   text1: "Profile updated successfully",
-      // });
-      // queryClient.invalidateQueries({ queryKey: ['getActivity'] })
-      router.navigate("/activity-list");
+      Toast.show({
+        type: "success",
+        text1: "Profile updated successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ['getActivity'] })
+      router.replace("/activity-list");
+
     },
-    // onError: (error) => {
-    //   Toast.show({
-    //     type: "error",
-    //     text1: "Failed to update profile",
-    //     text2: error?.message || "Something went wrong",
-    //   });
-    // },
+    onError: (error) => {
+      Toast.show({
+        type: "error",
+        text1: "Failed to update profile",
+        text2: error?.message || "Something went wrong",
+      });
+    },
   });
 
   // Form submission

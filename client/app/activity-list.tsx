@@ -1,137 +1,19 @@
 import { GetActivity } from "@/API/apiHandler";
 import ActivityListSkeleton from "@/components/UI/loading/activityList";
 import {
-  FontAwesome5,
   Ionicons,
   MaterialCommunityIcons
 } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { useState } from "react";
 import {
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
   View
 } from "react-native";
 
-import { SafeAreaView } from "react-native-safe-area-context";
-
-// Activity type definition
-type Activity = {
-  id: string;
-  title: string;
-  location: string;
-  skillRating: number;
-  date: string;
-  day: string;
-  time: string;
-  duration: string;
-  available: number;
-  total: number;
-  isPaid: boolean;
-  isClub: boolean;
-  isBooked: boolean;
-  isBookmarked: boolean;
-  color: string;
-  icon: string;
-};
-
-// Sample data
-const activities: Activity[] = [
-  {
-    id: "1",
-    title: "Doubles by James D",
-    location: "Sun Park Club, Singapore",
-    skillRating: 3.0,
-    date: "June 17",
-    day: "Sunday",
-    time: "10:30 AM",
-    duration: "2hrs",
-    available: 4,
-    total: 8,
-    isPaid: true,
-    isClub: true,
-    isBooked: true,
-    isBookmarked: true,
-    color: "#1E88E5",
-    icon: "tennis",
-  },
-  {
-    id: "2",
-    title: "Doubles by Ceylon Spo...",
-    location: "Ceylon Sports Club, 101 Bal...",
-    skillRating: 3.6,
-    date: "June 17",
-    day: "Sunday",
-    time: "10:30 AM",
-    duration: "2hrs",
-    available: 4,
-    total: 8,
-    isPaid: true,
-    isClub: true,
-    isBooked: false,
-    isBookmarked: false,
-    color: "#4CAF50",
-    icon: "badminton",
-  },
-  {
-    id: "3",
-    title: "Singles by Mary Lou",
-    location: "Woodlands ActiveSG Spor...",
-    skillRating: 4.5,
-    date: "June 17",
-    day: "Sunday",
-    time: "10:30 AM",
-    duration: "2hrs",
-    available: 4,
-    total: 8,
-    isPaid: true,
-    isClub: false,
-    isBooked: false,
-    isBookmarked: false,
-    color: "#FF9800",
-    icon: "tennis",
-  },
-  {
-    id: "4",
-    title: "Singles by Mary Lou",
-    location: "Woodlands ActiveSG Spor...",
-    skillRating: 4.5,
-    date: "June 17",
-    day: "Sunday",
-    time: "10:30 AM",
-    duration: "2hrs",
-    available: 4,
-    total: 8,
-    isPaid: false,
-    isClub: false,
-    isBooked: false,
-    isBookmarked: false,
-    color: "#9C27B0",
-    icon: "running",
-  },
-  {
-    id: "5",
-    title: "Doubles by Ceylon Spo...",
-    location: "Ceylon Sports Club, 101 Bal...",
-    skillRating: 3.6,
-    date: "June 17",
-    day: "Sunday",
-    time: "10:30 AM",
-    duration: "2hrs",
-    available: 4,
-    total: 8,
-    isPaid: false,
-    isClub: true,
-    isBooked: false,
-    isBookmarked: false,
-    color: "#4CAF50",
-    icon: "badminton",
-  },
-];
 
 // Filter options
 const sportOptions = ["Sport", "Tennis", "Badminton", "Running", "Swimming"];
@@ -139,12 +21,6 @@ const timeOptions = ["Time", "Morning", "Afternoon", "Evening"];
 const clubOptions = ["My Clubs", "All Clubs", "Favorites"];
 
 const ActivitiesList = () => {
-  const [selectedSport, setSelectedSport] = useState(sportOptions[0]);
-  const [selectedTime, setSelectedTime] = useState(timeOptions[0]);
-  const [selectedClub, setSelectedClub] = useState(clubOptions[0]);
-  const [bookmarkedCount, setBookmarkedCount] = useState(5);
-
-
 
   const { data, isLoading } = useQuery({
     queryKey: ["getActivity"],
