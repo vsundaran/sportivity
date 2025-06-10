@@ -34,12 +34,25 @@ const ActivitySchema = new mongoose.Schema({
         required: true,
     },
     duration: {
-        type: Number, // In hours or minutes — depends on your app logic
+        type: Number,
         required: true,
     },
     venue: {
-        type: String,
-        required: true,
+        address: {
+            type: String,
+            required: true,
+            default: 'Dropped pin'
+        },
+        latitude: {
+            type: Number,
+            required: true,
+            default: 0
+        },
+        longitude: {
+            type: Number,
+            required: true,
+            default: 0
+        }
     },
     description: {
         type: String,
@@ -74,7 +87,7 @@ const ActivitySchema = new mongoose.Schema({
         default: false,
     },
     players: {
-        type: [Number], // You may change to [mongoose.Schema.Types.ObjectId] if referencing user documents
+        type: [Number],
         default: [],
     }
 });
