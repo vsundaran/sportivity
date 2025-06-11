@@ -20,6 +20,7 @@ import {
 import { ActivityIndicator } from "react-native-paper";
 import { GetProfile, GetSkills, UpdateProfile } from "../API/apiHandler";
 import Toast from "react-native-toast-message";
+import LocationSelector from "@/components/UI/map";
 
 export default function ProfileScreen() {
   const [firstName, setFirstName] = useState("");
@@ -77,6 +78,7 @@ export default function ProfileScreen() {
     formData.append('yearOfBirth', yearOfBirth);
     formData.append('shortBio', bio);
     formData.append('country', country);
+    formData.append('location', location);
 
     if (profileImage) {
       formData.append('profileImage', {
@@ -103,6 +105,7 @@ export default function ProfileScreen() {
   };
 
   React.useEffect(() => {
+    console.log(data, 'data')
     if (data) {
       const profileData: any = data;
       setFirstName(profileData.firstName || "");
@@ -128,6 +131,13 @@ export default function ProfileScreen() {
     { length: currentYear - 1974 },
     (_, i) => 1975 + i
   ).reverse();
+
+
+  const [location, setLocation] = useState<{ latitude: number; longitude: number; address?: string } | null>(null);
+
+  const selectLocation = (coords: { "address": string, "latitude": number, "longitude": number }) => {
+    setLocation(coords);
+  }
 
   if (isLoading) return <ProfileLoadingSkeleton />
 
@@ -213,6 +223,13 @@ export default function ProfileScreen() {
               onChangeText={setBio}
               multiline
             />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>LOCATION</Text>
+            <View style={{ height: 350, borderRadius: 8, overflow: "hidden", marginTop: 10 }}>
+              <LocationSelector onSelect={selectLocation} />
+            </View>
           </View>
 
           <View style={styles.inputGroup}>
