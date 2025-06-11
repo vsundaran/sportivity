@@ -45,6 +45,23 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  location: {
+    address: {
+      type: String,
+      required: true,
+      default: 'Dropped pin'
+    },
+    latitude: {
+      type: Number,
+      required: true,
+      default: 0
+    },
+    longitude: {
+      type: Number,
+      required: true,
+      default: 0
+    }
+  },
   createdAt: {
     type: Date,
     default: Date.now

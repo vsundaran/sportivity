@@ -707,7 +707,7 @@ const NewActivityScreen = () => {
         <View style={styles.section}>
           <View style={styles.playerListHeader}>
             <Text style={styles.sectionTitle}>PLAYER LIST</Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => router.navigate("/invite-player")}>
               <Text style={styles.inviteText}>INVITE PLAYERS</Text>
             </TouchableOpacity>
           </View>

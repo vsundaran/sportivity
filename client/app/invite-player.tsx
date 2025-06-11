@@ -31,7 +31,7 @@ const InvitePlayersScreen = () => {
             location: 'East coast park, Singapore',
             rating: 4.5,
             activities: 10,
-            avatar: '/placeholder.svg?height=60&width=60',
+            avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4YreOWfDX3kK-QLAbAL4ufCPc84ol2MA8Xg&s',
             isSelected: true,
         },
         {
@@ -40,7 +40,7 @@ const InvitePlayersScreen = () => {
             location: 'East coast park, Singapore',
             rating: 4.5,
             activities: 10,
-            avatar: '/placeholder.svg?height=60&width=60',
+            avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4YreOWfDX3kK-QLAbAL4ufCPc84ol2MA8Xg&s',
             isSelected: true,
         },
         {
@@ -49,7 +49,7 @@ const InvitePlayersScreen = () => {
             location: 'East coast park, Singapore',
             rating: 4.5,
             activities: 10,
-            avatar: '/placeholder.svg?height=60&width=60',
+            avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4YreOWfDX3kK-QLAbAL4ufCPc84ol2MA8Xg&s',
             isSelected: false,
         },
         {
@@ -58,7 +58,7 @@ const InvitePlayersScreen = () => {
             location: 'East coast park, Singapore',
             rating: 4.5,
             activities: 10,
-            avatar: '/placeholder.svg?height=60&width=60',
+            avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4YreOWfDX3kK-QLAbAL4ufCPc84ol2MA8Xg&s',
             isSelected: false,
         },
         {
@@ -67,7 +67,7 @@ const InvitePlayersScreen = () => {
             location: 'East coast park, Singapore',
             rating: 4.5,
             activities: 10,
-            avatar: '/placeholder.svg?height=60&width=60',
+            avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4YreOWfDX3kK-QLAbAL4ufCPc84ol2MA8Xg&s',
             isSelected: false,
         },
     ]);
@@ -94,14 +94,11 @@ const InvitePlayersScreen = () => {
     };
 
     const renderStars = (rating: number) => {
-        return Array.from({ length: 5 }, (_, index) => (
-            <Ionicons
-                key={index}
-                name={index < Math.floor(rating) ? 'star' : index < rating ? 'star-half' : 'star-outline'}
-                size={12}
-                color="#FF9500"
-            />
-        ));
+        return <Ionicons
+            name={'star'}
+            size={12}
+            color="white"
+        />
     };
 
     return (
@@ -258,8 +255,8 @@ const styles = StyleSheet.create({
     chip: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#007AFF',
-        borderRadius: 16,
+        borderRadius: 100,
+        backgroundColor: "#2196f3",
         paddingHorizontal: 12,
         paddingVertical: 6,
         marginRight: 8,
@@ -380,8 +377,8 @@ const styles = StyleSheet.create({
     checkedCircle: {
         width: 24,
         height: 24,
-        borderRadius: 12,
-        backgroundColor: '#007AFF',
+        borderRadius: 100,
+        backgroundColor: '#2598f4',
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -398,7 +395,7 @@ const styles = StyleSheet.create({
         paddingBottom: 32,
     },
     inviteButton: {
-        backgroundColor: '#007AFF',
+        backgroundColor: '#2598f4',
         borderRadius: 8,
         paddingVertical: 16,
         alignItems: 'center',

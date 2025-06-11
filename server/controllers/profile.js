@@ -42,6 +42,7 @@ exports.updateProfile = async (req, res) => {
             yearOfBirth,
             shortBio,
             country,
+            location
         } = req.body;
 
         const isNewUser = false;
@@ -91,6 +92,7 @@ exports.updateProfile = async (req, res) => {
                         shortBio,
                         country,
                         isNewUser,
+                        location
                     },
                 },
                 { new: true }

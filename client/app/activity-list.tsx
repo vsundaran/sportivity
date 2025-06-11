@@ -174,7 +174,8 @@ const ActivitiesList = () => {
 
       {/* Floating Action Button */}
       <TouchableOpacity style={styles.fab}
-        onPress={() => router.replace("/invite-player")}
+        // onPress={() => router.navigate("/invite-player")}
+        onPress={() => router.navigate("/create-activity")}
       // onPress={() => router.navigate("/test")}
       >
         <Ionicons name="add" size={24} color="white" />
