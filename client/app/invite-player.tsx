@@ -418,13 +418,19 @@ import { useQuery } from '@tanstack/react-query';
 import { GetPlayers } from '@/API/apiHandler';
 
 interface User {
-    id: string;
-    name: string;
-    location: string;
+    _id: string;
+    firstName: string;
+    lastName: string;
+    shortBio: string;
+    country: string;
     rating: number;
     activities: number;
     avatar: string;
     isSelected: boolean;
+    profileImage: string;
+    location: {
+        address: string,
+    }
 }
 
 const InvitePlayersScreen = () => {
@@ -449,7 +455,7 @@ const InvitePlayersScreen = () => {
         queryKey: ['players', debouncedQuery, activeTab],
         queryFn: () => GetPlayers(debouncedQuery, activeTab),
     });
-    const players: any = fetchedPlayers
+    const players: any = fetchedPlayers || []
 
     // Update users when new data is fetched
     useEffect(() => {
@@ -457,7 +463,7 @@ const InvitePlayersScreen = () => {
         if (fetchedPlayers) {
             setUsers(() => players?.map((player: any) => ({
                 ...player,
-                isSelected: users.find(u => u.id === player.id)?.isSelected || false
+                isSelected: users.find(u => u._id === player._id)?.isSelected || false
             })));
         }
     }, [fetchedPlayers]);
@@ -465,9 +471,10 @@ const InvitePlayersScreen = () => {
     const selectedUsers = users.filter(user => user.isSelected);
 
     const toggleUserSelection = (userId: string) => {
+        if (!userId) return
         setUsers(prevUsers =>
             prevUsers.map(user =>
-                user.id === userId ? { ...user, isSelected: !user.isSelected } : user
+                user._id === userId ? { ...user, isSelected: !user.isSelected } : user
             )
         );
     };
@@ -475,7 +482,7 @@ const InvitePlayersScreen = () => {
     const removeSelectedUser = (userId: string) => {
         setUsers(prevUsers =>
             prevUsers.map(user =>
-                user.id === userId ? { ...user, isSelected: false } : user
+                user._id === userId ? { ...user, isSelected: false } : user
             )
         );
     };
@@ -498,9 +505,9 @@ const InvitePlayersScreen = () => {
                     <Text style={styles.inviteLabel}>Invite:</Text>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsContainer}>
                         {selectedUsers.map(user => (
-                            <View key={user.id} style={styles.chip}>
-                                <Text style={styles.chipText}>{user.name.split(' ')[0]}</Text>
-                                <TouchableOpacity onPress={() => removeSelectedUser(user.id)}>
+                            <View key={user._id} style={styles.chip}>
+                                <Text style={styles.chipText}>{`${user.firstName} ${user.lastName}`}</Text>
+                                <TouchableOpacity onPress={() => removeSelectedUser(user._id)}>
                                     <Ionicons name="close" size={16} color="#fff" style={styles.chipClose} />
                                 </TouchableOpacity>
                             </View>
@@ -551,14 +558,14 @@ const InvitePlayersScreen = () => {
                 ) : users.length > 0 ? (
                     users.map(user => (
                         <TouchableOpacity
-                            key={user.id}
+                            key={user._id}
                             style={styles.userItem}
-                            onPress={() => toggleUserSelection(user.id)}
+                            onPress={() => toggleUserSelection(user._id)}
                         >
-                            <Image source={{ uri: user?.profileImage || " " }} style={styles.avatar} />
+                            <Image source={{ uri: user?.profileImage || `https://avatar.iran.liara.run/username?username=${user.firstName}+${user.lastName}` }} style={styles.avatar} />
                             <View style={styles.userInfo}>
                                 <Text style={styles.userName}>{`${user.firstName} ${user.lastName}`}</Text>
-                                <Text style={styles.userLocation}>{user.location}</Text>
+                                <Text style={styles.userLocation}>{user.location.address}</Text>
                                 <View style={styles.userStats}>
                                     <View style={styles.ratingContainer}>
                                         <Text style={styles.ratingText}>{user.rating}</Text>

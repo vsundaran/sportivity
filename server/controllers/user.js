@@ -3,7 +3,9 @@ const User = require('../models/User');
 exports.getUsers = async (req, res) => {
     try {
         const { name } = req.query;
-        console.log(name, 'name');
+        if (!name) {
+            res.status(200).json([]);
+        }
         let query = {};
         if (name) {
             query.$or = [
