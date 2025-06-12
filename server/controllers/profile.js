@@ -47,7 +47,7 @@ exports.updateProfile = async (req, res) => {
 
         const isNewUser = false;
         let profileImageUrl;
-        location = JSON.parse(req.body.location);
+        location = JSON.parse(location);
 
         if (req.file) {
             const uploadResult = await cloudinary.uploader.upload_stream(

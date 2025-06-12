@@ -39,7 +39,7 @@ export default function ProfileScreen() {
     queryFn: GetProfile,
   });
 
-  const { data: GetSkillsData, isLoading: GetSkillsDataLoading } = useQuery({
+  const { data: GetSkillsData } = useQuery({
     queryKey: ["getSkills"],
     queryFn: GetSkills,
   });
@@ -78,7 +78,9 @@ export default function ProfileScreen() {
     formData.append('yearOfBirth', yearOfBirth);
     formData.append('shortBio', bio);
     formData.append('country', country);
-    formData.append('location', location);
+    formData.append('location', JSON.stringify(location));
+
+    console.log(JSON.stringify(location), "JSON.stringify(location)")
 
     if (profileImage) {
       formData.append('profileImage', {
