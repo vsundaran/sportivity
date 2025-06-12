@@ -11,7 +11,7 @@ exports.getUsers = async (req, res) => {
                 { lastName: { $regex: name, $options: 'i' } }
             ];
         };
-        const users = await User.find(query).select("firstName lastName profileImage shortBio country");
+        const users = await User.find(query).select("firstName lastName profileImage shortBio country location");
         res.status(200).json(users);
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });

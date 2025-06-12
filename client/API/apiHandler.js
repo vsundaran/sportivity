@@ -64,3 +64,12 @@ export const GetActivity = async () => {
     throw err
   }
 }
+
+export const GetPlayers = async (query, tab) => {
+  try {
+    const response = await apiService.get(apiEndpoints.PLAYERS.GET_PLAYERS, { name: query });
+    return response;
+  } catch (err) {
+    throw err
+  }
+}

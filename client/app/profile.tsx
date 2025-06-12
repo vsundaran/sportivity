@@ -1,6 +1,6 @@
 import ProfileLoadingSkeleton from "@/components/UI/loading/Profile";
 import { Ionicons } from "@expo/vector-icons";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -45,8 +45,7 @@ export default function ProfileScreen() {
   });
   const skillsStails: any = GetSkillsData
 
-
-
+  const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (formData: FormData) => UpdateProfile(formData),
     onSuccess: () => {
@@ -54,6 +53,7 @@ export default function ProfileScreen() {
         type: "success",
         text1: "Profile updated successfully",
       });
+      queryClient.invalidateQueries({ queryKey: ['getProfile'] })
       if (skillsStails?.name) {
         router.replace("/activity-list");
       } else {

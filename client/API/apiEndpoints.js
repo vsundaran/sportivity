@@ -18,6 +18,9 @@ const API_ENDPOINTS = {
     CREATE_ACTIVITY: '/activity',
     GET_ACTIVITIES: '/activity',
   },
+  PLAYERS: {
+    GET_PLAYERS: '/users'
+  }
 };
 
 export default API_ENDPOINTS;
