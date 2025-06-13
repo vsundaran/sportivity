@@ -240,9 +240,7 @@ const LoginScreen = () => {
                 </Text>
               </Text>
             </TouchableOpacity>
-          )}
-
-          <Link href={"/test"}>Hello</Link>
+          )};
         </View>
       </View>
     </KeyboardAwareScrollView>

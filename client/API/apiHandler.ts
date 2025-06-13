@@ -2,7 +2,7 @@ import apiEndpoints from "./apiEndpoints";
 import apiService from "./apiService";
 
 //profile
-export const GetProfile = async () => {
+export const GetProfile = async (): Promise<any> => {
   try {
     const response = await apiService.get(apiEndpoints.USER.PROFILE);
     return response;
@@ -11,7 +11,7 @@ export const GetProfile = async () => {
   }
 };
 
-export const UpdateProfile = async (data) => {
+export const UpdateProfile = async (data:any) => {
   try {
     const response = await apiService.put(apiEndpoints.USER.PROFILE, data, {
       headers: {
@@ -26,7 +26,7 @@ export const UpdateProfile = async (data) => {
 
 
 // sport
-export const UpdateSkill = async (data) => {
+export const UpdateSkill = async (data:any) => {
   try {
     const response = await apiService.post(apiEndpoints.SKILLS.USER_SKILL, data);
     return response;
@@ -39,7 +39,8 @@ export const UpdateSkill = async (data) => {
 export const GetSkills = async () => {
   try {
     const response = await apiService.get(apiEndpoints.SKILLS.GET_SKILLS);
-    return response;
+    console.log(response, "response getSkills")
+    return response || {};
   } catch (err) {
     throw err
   }
@@ -47,7 +48,7 @@ export const GetSkills = async () => {
 
 
 // activity
-export const CreateActivity = async (data) => {
+export const CreateActivity = async (data:any) => {
   try {
     const response = await apiService.post(apiEndpoints.ACTIVITY.CREATE_ACTIVITY, data);
     return response;
@@ -65,7 +66,7 @@ export const GetActivity = async () => {
   }
 }
 
-export const GetPlayers = async (query, tab) => {
+export const GetPlayers = async (query:string, tab:string) => {
   try {
     const response = await apiService.get(apiEndpoints.PLAYERS.GET_PLAYERS, { name: query });
     return response;

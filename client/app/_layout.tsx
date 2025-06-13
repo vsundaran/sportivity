@@ -97,7 +97,7 @@ function RootLayout() {
           options={{
             ...getScreenOptions("Activity List"),
             headerLeft: () => (
-              <TouchableOpacity onPress={() => router.push('/profile')}>
+              <TouchableOpacity onPress={() => router.push('/settings')}>
                 {user?.profileImage ? (
                   <Image
                     source={{ uri: user.profileImage }}
@@ -136,6 +136,7 @@ function RootLayout() {
         <Stack.Screen name="profile" options={getScreenOptions("Profile")} />
         <Stack.Screen name="skill-assessment" options={getScreenOptions("Skill Assessment Summary")} />
         <Stack.Screen name="invite-player" options={getScreenOptions("Invite players")} />
+        <Stack.Screen name="settings" options={getScreenOptions("Settings")} />
       </Stack>
     </>
     // </SafeAreaView >

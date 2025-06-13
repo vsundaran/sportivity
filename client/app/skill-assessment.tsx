@@ -6,9 +6,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  SafeAreaView,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -16,7 +14,22 @@ import {
 } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
-import { GetSkillsApiResponse } from "../constant/skills/constant";
+
+interface Skill {
+  _id: string;
+  name: string;
+  description: string;
+  weight: number;
+  score?: number;
+  color?: string;
+}
+
+interface SkillsData {
+  _id: string;
+  name: string;
+  icon: string;
+  skills: Skill[];
+}
 
 const SkillAssessmentSummary = () => {
   const { data, isLoading } = useQuery({
@@ -24,12 +37,16 @@ const SkillAssessmentSummary = () => {
     queryFn: GetSkills,
   });
 
-  const skillsListData: GetSkillsApiResponse | any = data;
-  const skills = skillsListData?.skills || [];
-  const sportName = skillsListData?.name || "";
-  const sportIcon = skillsListData?.icon || "";
+  const skillsListData: SkillsData = data?.data || {};
+  const skills = skillsListData?.skills?.map(skill => ({
+    ...skill,
+    score: 0,
+    color: "#9E9E9E"
+  })) || [];
+  const sportName:any = skillsListData?.name || "";
+  const sportIcon:any = skillsListData?.icon || "";
 
-  const [skillRatings, setSkillRatings] = useState(() => skills);
+  const [skillRatings, setSkillRatings] = useState<Skill[]>(skills);
 
   useEffect(() => {
     if (skills.length > 0) {
@@ -70,9 +87,9 @@ const SkillAssessmentSummary = () => {
   const handlePress = () => {
     // Calculate the average score to determine the level
     const averageScore = skillRatings.reduce(
-      (sum: number, skill: any) => sum + skill.score,
+      (sum: number, skill: any) => sum + (skill.score || 0),
       0
-    ) / skillRatings.length;
+    ) / (skillRatings.length || 1);
 
     let level = "";
     if (averageScore < 3) {
@@ -99,7 +116,7 @@ const SkillAssessmentSummary = () => {
     });
   };
 
-  const renderSkillBar = (skill: any, index: number) => {
+  const renderSkillBar = (skill: Skill, index: number) => {
     return (
       <View key={skill._id} style={styles.skillBarContainer}>
         <View style={styles.sliderContainer}>
@@ -108,25 +125,26 @@ const SkillAssessmentSummary = () => {
             minimumValue={0}
             maximumValue={10}
             step={0.1}
-            value={skill.score}
+            value={skill.score || 0}
             onValueChange={(value) => handleValueChange(value, index)}
             minimumTrackTintColor="#2196F3"
             maximumTrackTintColor="#E0E0E0"
             thumbTintColor={skill.color}
           />
           <View style={styles.sliderValueContainer}>
-            <Text style={styles.sliderValue}>{skill.score.toFixed(1)}</Text>
+            <Text style={styles.sliderValue}>{(skill.score || 0).toFixed(1)}</Text>
           </View>
         </View>
         <Text style={styles.skillName}>{skill.name}</Text>
+        <Text style={styles.skillDescription}>{skill.description}</Text>
       </View>
     );
   };
 
   // Calculate average score for the level indicator
   const averageScore =
-    skillRatings.reduce((sum: number, skill: any) => sum + skill.score, 0) /
-    skillRatings.length;
+    skillRatings.reduce((sum: number, skill: any) => sum + (skill.score || 0), 0) /
+    (skillRatings.length || 1);
   const formattedAverage = averageScore.toFixed(1);
 
   // Determine level based on average score
@@ -139,12 +157,7 @@ const SkillAssessmentSummary = () => {
 
   const levelName = getLevelName(averageScore);
 
-
-  // const [thik, setThik] = useState(true);
-
-  // // setTimeout(() => { setThik(false) }, 100000);
-
-  if (isLoading) return <SkeletonSkillAssessmentSummary />
+  if (isLoading) return <SkeletonSkillAssessmentSummary />;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -154,7 +167,7 @@ const SkillAssessmentSummary = () => {
           <View style={styles.content}>
             <Text style={styles.sectionTitle}>SKILL SUMMARY</Text>
 
-            {/* Tennis Icon and Title */}
+            {/* Sport Icon and Title */}
             <View style={styles.sportContainer}>
               <View style={styles.sportIconContainer}>
                 <MaterialCommunityIcons name={sportIcon} size={30} color="white" />
@@ -183,7 +196,7 @@ const SkillAssessmentSummary = () => {
 
             {/* Skill Bars */}
             <View style={styles.skillBarsContainer}>
-              {skillRatings.map((skill: any, index: number) => renderSkillBar(skill, index))}
+              {skillRatings.map((skill: Skill, index: number) => renderSkillBar(skill, index))}
             </View>
           </View>
         </ScrollView>
@@ -233,6 +246,12 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 16,
+  },
+   skillDescription: {
+    fontSize: 12,
+    color: "#9E9E9E",
+    marginTop: 4,
+    fontStyle: 'italic',
   },
   sectionTitle: {
     fontSize: 14,

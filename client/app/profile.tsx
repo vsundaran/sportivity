@@ -7,9 +7,7 @@ import React, { useState } from "react";
 import {
   Image,
   Modal,
-  SafeAreaView,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
   TextInput,
@@ -106,28 +104,35 @@ export default function ProfileScreen() {
     }
   };
 
-  React.useEffect(() => {
-    console.log(data, 'data')
-    if (data) {
-      const profileData: any = data;
-      setFirstName(profileData.firstName || "");
-      setLastName(profileData.lastName || "");
-      setEmail(profileData.email || "");
-      setYearOfBirth(profileData.yearOfBirth || "");
-      setBio(profileData.shortBio || "");
-      setCountry("India"); // Force set country to India
-      setGender(
-        profileData.gender
-          ? profileData.gender.charAt(0).toUpperCase() +
-          profileData.gender.slice(1)
-          : ""
-      );
-      if (profileData.profileImage) {  // Changed from profileData.profileImageUrl to profileData.profileImage
-        setProfileImage(profileData.profileImage);
-      }
+React.useEffect(() => {
+  console.log(data, 'data');
+  if (data?.success) {
+    const profileData = data.user;
+    setFirstName(profileData.firstName || "");
+    setLastName(profileData.lastName || "");
+    setEmail(profileData.email || "");
+    setYearOfBirth(profileData.yearOfBirth || "");
+    setBio(profileData.shortBio || "");
+    setCountry(profileData.country || "India");
+    setGender(
+      profileData.gender
+        ? profileData.gender.charAt(0).toUpperCase() +
+        profileData.gender.slice(1)
+        : ""
+    );
+    if (profileData.profileImage) {  
+      setProfileImage(profileData.profileImage);
     }
-  }, [data]);
-  // Generate years from 1975 to current year
+    if (profileData.location) {
+      setLocation({
+        latitude: profileData.location.latitude,
+        longitude: profileData.location.longitude,
+        address: profileData.location.address
+      });
+    }
+  }
+}, [data]);
+
   const currentYear = new Date().getFullYear();
   const years = Array.from(
     { length: currentYear - 1974 },
@@ -219,7 +224,7 @@ export default function ProfileScreen() {
           <View style={styles.inputGroup}>
             <Text style={styles.label}>SHORT BIO</Text>
             <TextInput
-              style={styles.input}
+              style={{...styles.input, height:88}}
               placeholder="Enter short bio"
               value={bio}
               onChangeText={setBio}

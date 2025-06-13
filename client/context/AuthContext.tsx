@@ -2,6 +2,7 @@ import { GetProfile } from "@/API/apiHandler";
 import { isTokenValid } from "@/utils/jwt";
 import { getToken, removeToken } from "@/utils/token";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface AuthContextType {
@@ -43,6 +44,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+
 
   const { data, isLoading: isFetchingProfile } = useQuery({
     queryKey: ["getProfile"],
@@ -64,9 +67,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const logout = async () => {
+    setIsLoading(_ => true)
     await removeToken();
-    setIsAuthenticated(false);
+    setIsAuthenticated(_ => false);
     setUser(null);
+    setIsLoading(_ => false);
+    router.navigate('/');
   };
 
   const checkToken = async () => {

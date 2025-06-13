@@ -55,11 +55,12 @@ const InvitePlayersScreen = () => {
     }, [searchQuery]);
 
     // Fetch players using React Query
-    const { data: fetchedPlayers = [], isLoading } = useQuery({
+    const { data: fetchedPlayers = {}, isLoading } = useQuery({
         queryKey: ['players', debouncedQuery, activeTab],
         queryFn: () => GetPlayers(debouncedQuery, activeTab),
     });
-    const players: any = fetchedPlayers || []
+    const fetchedPlayersData: any = fetchedPlayers || {}
+    const players:any =fetchedPlayersData.users
     // Update users when new data is fetched or when selectedPlayers changes
     useEffect(() => {
         if (players) {
@@ -396,8 +397,10 @@ const styles = StyleSheet.create({
     inviteButton: {
         backgroundColor: '#2598f4',
         borderRadius: 8,
+        width:'100%',
         paddingVertical: 16,
         alignItems: 'center',
+        justifyContent:"center",
     },
     disabledButton: {
         backgroundColor: '#cccccc',
@@ -406,6 +409,7 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 16,
         fontWeight: '600',
+        textAlign:"center"
     },
     loadingContainer: {
         flex: 1,

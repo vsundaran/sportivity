@@ -9,6 +9,7 @@ exports.getSkills = async (req, res) => {
         if (!userdata) {
             return res.status(404).json({ success: false, message: 'User skills not found' });
         }
+        console.log(userdata.primarySport, 'userdata.primarySport')
         const data = await GameSkill.findOne({ "name": userdata.primarySport });
         if (!data) {
             return res.status(404).json({ success: false, message: 'Game skills not found for the primary sport' });
