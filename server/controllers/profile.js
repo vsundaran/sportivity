@@ -6,32 +6,13 @@ exports.getProfile = async (req, res) => {
     try {
         const user = await User.findOne({ email: req.user.email });
         if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+            return res.status(404).json({ success: false, error: 'User not found' });
         }
-        res.json(user);
+        res.json({ success: true, message: 'Profile fetched successfully', user });
     } catch (error) {
-        res.status(500).json({ error: 'Server error' });
+        res.status(500).json({ success: false, error: 'Server error' });
     }
-}
-
-// exports.updateProfile = async (req, res) => {
-//     try {
-//         const { firstName, lastName, gender, yearOfBirth, shortBio, country } = req.body;
-//         // if the user is updated their profile means, it is not a new user
-//         const isNewUser = false
-//         const user = await User.findOneAndUpdate(
-//             { email: req.user.email },
-//             { $set: { firstName, lastName, gender, yearOfBirth, shortBio, country, isNewUser } },
-//             { new: true }
-//         );
-//         res.json(user);
-//     } catch (error) {
-//         res.status(500).json({ error: 'Server error' });
-//     }
-// }
-
-
-
+};
 
 exports.updateProfile = async (req, res) => {
     try {
@@ -50,38 +31,52 @@ exports.updateProfile = async (req, res) => {
         location = JSON.parse(location);
 
         if (req.file) {
-            const uploadResult = await cloudinary.uploader.upload_stream(
+            const uploadStream = cloudinary.uploader.upload_stream(
                 {
                     folder: 'profile_pictures',
                 },
                 async (error, result) => {
-                    if (error) return res.status(500).json({ error: 'Image upload failed' });
+                    if (error) {
+                        return res.status(500).json({ success: false, error: 'Image upload failed' });
+                    }
 
                     profileImageUrl = result.secure_url;
 
-                    const updatedUser = await User.findOneAndUpdate(
-                        { email: req.user.email },
-                        {
-                            $set: {
-                                firstName,
-                                lastName,
-                                gender,
-                                yearOfBirth,
-                                shortBio,
-                                country,
-                                isNewUser,
-                                profileImage: profileImageUrl,
-                                location
+                    try {
+                        const updatedUser = await User.findOneAndUpdate(
+                            { email: req.user.email },
+                            {
+                                $set: {
+                                    firstName,
+                                    lastName,
+                                    gender,
+                                    yearOfBirth,
+                                    shortBio,
+                                    country,
+                                    isNewUser,
+                                    profileImage: profileImageUrl,
+                                    location
+                                },
                             },
-                        },
-                        { new: true }
-                    );
+                            { new: true }
+                        );
 
-                    return res.json(updatedUser);
+                        if (!updatedUser) {
+                            return res.status(404).json({ success: false, error: 'User not found' });
+                        }
+
+                        return res.json({
+                            success: true,
+                            message: 'Profile updated successfully',
+                            user: updatedUser
+                        });
+                    } catch (err) {
+                        return res.status(500).json({ success: false, error: 'Server error' });
+                    }
                 }
             );
 
-            require('streamifier').createReadStream(req.file.buffer).pipe(uploadResult);
+            require('streamifier').createReadStream(req.file.buffer).pipe(uploadStream);
         } else {
             const updatedUser = await User.findOneAndUpdate(
                 { email: req.user.email },
@@ -100,10 +95,18 @@ exports.updateProfile = async (req, res) => {
                 { new: true }
             );
 
-            return res.json(updatedUser);
+            if (!updatedUser) {
+                return res.status(404).json({ success: false, error: 'User not found' });
+            }
+
+            return res.json({
+                success: true,
+                message: 'Profile updated successfully',
+                user: updatedUser
+            });
         }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Server error' });
+        res.status(500).json({ success: false, error: 'Server error' });
     }
 };

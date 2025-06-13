@@ -2,6 +2,7 @@
 import { CreateActivity } from "@/API/apiHandler";
 import LocationSelector from "@/components/UI/map";
 import useDateTimePicker from "@/custom-hooks/datePicker";
+import { clearSelectedPlayers } from "@/redux/slices/playersSlice";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -23,6 +24,7 @@ import {
   View
 } from "react-native";
 import Toast from "react-native-toast-message";
+import { useSelector } from "react-redux";
 // import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 
@@ -174,6 +176,10 @@ const NewActivityScreen = () => {
 
 
   const { date: selectedDateAndTime, showDatePicker: visibleDatePicker, showTimePicker, renderPicker } = useDateTimePicker();
+
+  const selectedPlayers = useSelector((state: any) => state.players.selectedPlayers);
+
+  console.log(selectedPlayers, 'selectedPlayers')
 
   // Animation handlers
   const handleSportSelect = (sport: Sport) => {
@@ -336,9 +342,10 @@ const NewActivityScreen = () => {
       isVenueBooked,
       isVisibleToInvited,
       isClubActivity,
-      players: players?.map(p => p.id)
+      players: selectedPlayers?.map((p: any) => p._id)
     };
     mutate(activityData);
+    clearSelectedPlayers()
   }
 
   const [venueLocation, setVenueLocation] = useState<{ latitude: number; longitude: number; address?: string } | null>(null);
@@ -713,16 +720,19 @@ const NewActivityScreen = () => {
           </View>
 
           <View style={styles.playerList}>
-            {players.map((player) => (
-              <View key={player.id} style={styles.playerItem}>
+            {selectedPlayers.map((player: any) => (
+              <View key={player._id} style={styles.playerItem}>
                 <Image
-                  source={{ uri: player.image }}
+                  source={{ uri: player.profileImage || `https://avatar.iran.liara.run/username?username=${player.firstName}+${player.lastName}` }}
                   style={styles.playerImage}
                 />
-                <View style={styles.playerRating}>
-                  <Text style={styles.ratingText}>{player.rating}</Text>
-                </View>
-                <Text style={styles.playerName}>{player.name}</Text>
+                {
+                  player?.rating ? <View style={styles.playerRating}>
+                    <Text style={styles.ratingText}>{player?.rating || ""}</Text>
+                  </View> : null
+                }
+
+                <Text style={styles.playerName}>{player?.firstName || ""}{player?.lastName || ""}</Text>
               </View>
             ))}
           </View>

@@ -97,7 +97,6 @@ exports.sendOTP = async (req, res) => {
     }
 }
 
-
 exports.verifyOTP = async (req, res) => {
     try {
         const { email, otp } = req.body;
@@ -105,14 +104,20 @@ exports.verifyOTP = async (req, res) => {
         const otpRecord = await OTP.findOne({ email, otp });
 
         if (!otpRecord) {
-            return res.status(400).json({ error: 'Invalid OTP' });
+            return res.status(400).json({ 
+                success: false,
+                error: 'Invalid OTP'
+            });
         }
 
         if (otpRecord.expiresAt < new Date()) {
-            return res.status(400).json({ error: 'OTP expired' });
+            return res.status(400).json({ 
+                success: false,
+                error: 'OTP expired'
+            });
         }
 
-        const userData = await User.findOneAndUpdate({ email }, { isVerified: true });
+        const userData = await User.findOneAndUpdate({ email }, { isVerified: true }, { new: true });
 
         await OTP.deleteOne({ _id: otpRecord._id });
 
@@ -126,6 +131,10 @@ exports.verifyOTP = async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Failed to verify OTP' });
+        res.status(500).json({ 
+            success: false,
+            error: 'Failed to verify OTP',
+            message: error.message
+        });
     }
 }
