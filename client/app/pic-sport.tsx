@@ -1,18 +1,44 @@
-import { UpdateSkill } from "@/API/apiHandler";
+import { GetUserSkill, UpdateSkill } from "@/API/apiHandler";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
 import Toast from "react-native-toast-message";
 
+interface UserSkill {
+  _id: string;
+  userId: string;
+  level: string;
+  primarySport: string;
+  score: number;
+  skills: Array<{
+    name: string;
+    score: number;
+    _id: string;
+  }>;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
 const SportSelectionScreen = () => {
   const [activeTab, setActiveTab] = useState("main");
-  const [selectedSport, setSelectedSport] = useState("Tennis");
   const router = useRouter();
-
   const queryClient = useQueryClient();
+
+  const { data: getUserSkillData } = useQuery({
+    queryKey: ["getUserSkill"],
+    queryFn: GetUserSkill,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+  });
+
+  // Set initial selectedSport from API data if available
+  const [selectedSport, setSelectedSport] = useState(
+    getUserSkillData?.data?.primarySport || "Tennis" // Default to Tennis if no data
+  );
 
   const mainSports = [
     { name: "Tennis", icon: "tennis" },

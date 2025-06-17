@@ -1,4 +1,4 @@
-import { GetSkills, UpdateSkill } from "@/API/apiHandler";
+import { GetSkills, GetUserSkill, UpdateSkill } from "@/API/apiHandler";
 import SkeletonSkillAssessmentSummary from "@/components/UI/loading/skillAssessmentSummery";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
@@ -24,12 +24,29 @@ interface Skill {
   color?: string;
 }
 
+interface UserSkill {
+  _id: string;
+  userId: string;
+  level: string;
+  primarySport: string;
+  score: number;
+  skills: Array<{
+    name: string;
+    score: number;
+    _id: string;
+  }>;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
 interface SkillsData {
   _id: string;
   name: string;
   icon: string;
   skills: Skill[];
 }
+
 const SkillAssessmentSummary = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["getSkills"],
@@ -38,20 +55,34 @@ const SkillAssessmentSummary = () => {
     refetchOnWindowFocus: true,
   });
 
-  console.log(data, "data skill assessment");
+  const { data: getUserSkillData, isLoading: getUserDataLoading } = useQuery({
+    queryKey: ["getUserSkill"],
+    queryFn: GetUserSkill,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+  });
 
   const skillsListData: SkillsData = data?.data || {};
-  // console.log(skillsListData, "skillsListData");
+  const userSkillData: UserSkill = getUserSkillData?.data || {};
 
   const skills = useMemo(() => {
     return (
-      skillsListData?.skills?.map((skill) => ({
-        ...skill,
-        score: 0,
-        color: "#9E9E9E",
-      })) || []
+      skillsListData?.skills?.map((skill) => {
+        // Find the corresponding skill in user's data
+        const userSkill = userSkillData?.skills?.find(
+          (userSkill) => userSkill.name === skill.name
+        );
+
+        const score = userSkill?.score || 0;
+
+        return {
+          ...skill,
+          score: score,
+          color: score > 0 ? (score < 5 ? "#8D6E63" : "#F9A825") : "#9E9E9E",
+        };
+      }) || []
     );
-  }, [skillsListData?.skills]);
+  }, [skillsListData?.skills, userSkillData?.skills]);
 
   const [skillRatings, setSkillRatings] = useState<Skill[]>(skills);
 
@@ -76,7 +107,6 @@ const SkillAssessmentSummary = () => {
   const { mutate } = useMutation({
     mutationFn: UpdateSkill,
     onSuccess: (response) => {
-      // console.log(response, "response");
       Toast.show({
         type: "success",
         text1: "Sport details updated",
@@ -93,7 +123,6 @@ const SkillAssessmentSummary = () => {
   });
 
   const handlePress = () => {
-    // Calculate the average score to determine the level
     const averageScore =
       skillRatings.reduce(
         (sum: number, skill: any) => sum + (skill.score || 0),
@@ -111,13 +140,11 @@ const SkillAssessmentSummary = () => {
       level = "gold";
     }
 
-    // Prepare the skills array for the API
     const skillsForApi = skillRatings.map((skill: any) => ({
       name: skill.name,
       score: skill.score,
     }));
 
-    // Call the mutation with the actual data
     mutate({
       level: level,
       score: averageScore,
@@ -147,17 +174,18 @@ const SkillAssessmentSummary = () => {
           </View>
         </View>
         <Text style={styles.skillName}>{skill.name}</Text>
-        {/* <Text style={styles.skillDescription}>{skill.description}</Text> */}
       </View>
     );
   };
 
   // Calculate average score for the level indicator
   const averageScore =
+    userSkillData?.score ||
     skillRatings.reduce(
       (sum: number, skill: any) => sum + (skill.score || 0),
       0
     ) / (skillRatings.length || 1);
+
   const formattedAverage = averageScore.toFixed(1);
 
   // Determine level based on average score
@@ -170,19 +198,19 @@ const SkillAssessmentSummary = () => {
 
   const levelName = getLevelName(averageScore);
   const sportIcon: any = skillsListData?.icon || "";
-  const sportName: any = skillsListData?.name || "";
+  const sportName: any =
+    userSkillData?.primarySport || skillsListData?.name || "";
 
-  if (isLoading) return <SkeletonSkillAssessmentSummary />;
+  if (isLoading || getUserDataLoading)
+    return <SkeletonSkillAssessmentSummary />;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
         <ScrollView style={styles.scrollView}>
-          {/* Main Content */}
           <View style={styles.content}>
             <Text style={styles.sectionTitle}>SKILL SUMMARY</Text>
 
-            {/* Sport Icon and Title */}
             <View style={styles.sportContainer}>
               <View style={styles.sportIconContainer}>
                 <MaterialCommunityIcons
@@ -194,7 +222,6 @@ const SkillAssessmentSummary = () => {
               <Text style={styles.sportName}>{sportName.toUpperCase()}</Text>
             </View>
 
-            {/* Level */}
             <View style={styles.levelContainer}>
               <View style={styles.levelScoreContainer}>
                 <Text style={styles.levelScore}>{formattedAverage}</Text>
@@ -213,7 +240,6 @@ const SkillAssessmentSummary = () => {
               </View>
             </View>
 
-            {/* Skill Bars */}
             <View style={styles.skillBarsContainer}>
               {skillRatings.map((skill: Skill, index: number) =>
                 renderSkillBar(skill, index)
@@ -222,7 +248,6 @@ const SkillAssessmentSummary = () => {
           </View>
         </ScrollView>
 
-        {/* Footer */}
         <View style={styles.footer}>
           <TouchableOpacity style={styles.exploreButton} onPress={handlePress}>
             <Text style={styles.exploreButtonText}>EXPLORE ACTIVITIES</Text>

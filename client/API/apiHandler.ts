@@ -36,6 +36,14 @@ export const UpdateSkill = async (data: any) => {
     throw err;
   }
 };
+export const GetUserSkill = async (data: any) => {
+  try {
+    const response = await apiService.get(apiEndpoints.SKILLS.USER_SKILL, data);
+    return response || {};
+  } catch (err) {
+    throw err;
+  }
+};
 
 // get skills
 export const GetSkills = async () => {
