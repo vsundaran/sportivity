@@ -3,13 +3,21 @@ import { isTokenValid } from "@/utils/jwt";
 import { getToken, removeToken } from "@/utils/token";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 interface AuthContextType {
   isAuthenticated: boolean;
   user: any;
   login: (userData: any) => void;
   logout: () => void;
+  setIsAuthenticated: Dispatch<SetStateAction<boolean>>;
   isLoading: boolean;
   isFetchingProfile: boolean;
 }
@@ -17,8 +25,9 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   user: null,
-  login: () => { },
-  logout: () => { },
+  login: () => {},
+  logout: () => {},
+  setIsAuthenticated: () => {},
   isLoading: true,
   isFetchingProfile: true,
 });
@@ -29,7 +38,7 @@ export interface User {
   isVerified: boolean;
   firstName: string;
   lastName: string;
-  gender: 'male' | 'female' | 'other'; // Adjust based on your gender enum logic
+  gender: "male" | "female" | "other"; // Adjust based on your gender enum logic
   yearOfBirth: string;
   shortBio: string;
   country: string;
@@ -39,22 +48,35 @@ export interface User {
   __v: number;
 }
 
-
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-
-  const { data, isLoading: isFetchingProfile } = useQuery({
+  const {
+    data,
+    isLoading: isFetchingProfile,
+    refetch,
+  } = useQuery({
     queryKey: ["getProfile"],
     queryFn: GetProfile,
-    enabled: isAuthenticated,
   });
 
   useEffect(() => {
-    const userData = data as User | null | undefined;
+    const checkAndRefetch = async () => {
+      const token = await getToken();
+      if (token && isTokenValid(token)) {
+        console.log("refetching");
+        refetch();
+      }
+    };
+    checkAndRefetch();
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    const userData = data?.user as User | null | undefined;
+    console.log(userData, "userData");
     if (userData) {
       setUser(userData);
       setIsAuthenticated(true);
@@ -67,21 +89,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const logout = async () => {
-    setIsLoading(_ => true)
+    setIsLoading((_) => true);
     await removeToken();
-    setIsAuthenticated(_ => false);
+    setIsAuthenticated((_) => false);
     setUser(null);
-    setIsLoading(_ => false);
-    router.navigate('/');
+    setIsLoading((_) => false);
+    router.navigate("/");
   };
 
   const checkToken = async () => {
     const token = await getToken();
     if (token && isTokenValid(token)) {
-      setIsAuthenticated(_ => true);
+      setIsAuthenticated((_) => true);
     } else {
       await removeToken();
-      setIsAuthenticated(_ => false);
+      setIsAuthenticated((_) => false);
     }
     setIsLoading(false);
   };
@@ -91,7 +113,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, isLoading, isFetchingProfile }}>
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        user,
+        login,
+        logout,
+        isLoading,
+        isFetchingProfile,
+        setIsAuthenticated,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

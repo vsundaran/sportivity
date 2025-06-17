@@ -1,7 +1,7 @@
 import ProfileLoadingSkeleton from "@/components/UI/loading/Profile";
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import * as ImagePicker from 'expo-image-picker';
+import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -41,7 +41,7 @@ export default function ProfileScreen() {
     queryKey: ["getSkills"],
     queryFn: GetSkills,
   });
-  const skillsStails: any = GetSkillsData
+  const skillsStails: any = GetSkillsData;
 
   const queryClient = useQueryClient();
   const mutation = useMutation({
@@ -51,7 +51,7 @@ export default function ProfileScreen() {
         type: "success",
         text1: "Profile updated successfully",
       });
-      queryClient.invalidateQueries({ queryKey: ['getProfile'] })
+      queryClient.invalidateQueries({ queryKey: ["getProfile"] });
       if (skillsStails?.name) {
         router.replace("/activity-list");
       } else {
@@ -70,21 +70,21 @@ export default function ProfileScreen() {
   const handleSave = () => {
     const formData = new FormData();
 
-    formData.append('firstName', firstName);
-    formData.append('lastName', lastName);
-    formData.append('gender', gender.toLowerCase());
-    formData.append('yearOfBirth', yearOfBirth);
-    formData.append('shortBio', bio);
-    formData.append('country', country);
-    formData.append('location', JSON.stringify(location));
+    formData.append("firstName", firstName);
+    formData.append("lastName", lastName);
+    formData.append("gender", gender.toLowerCase());
+    formData.append("yearOfBirth", yearOfBirth);
+    formData.append("shortBio", bio);
+    formData.append("country", country);
+    formData.append("location", JSON.stringify(location));
 
-    console.log(JSON.stringify(location), "JSON.stringify(location)")
+    console.log(JSON.stringify(location), "JSON.stringify(location)");
 
     if (profileImage) {
-      formData.append('profileImage', {
+      formData.append("profileImage", {
         uri: profileImage,
-        name: 'profile.jpg',
-        type: 'image/jpeg',
+        name: "profile.jpg",
+        type: "image/jpeg",
       } as any);
     }
 
@@ -104,34 +104,34 @@ export default function ProfileScreen() {
     }
   };
 
-React.useEffect(() => {
-  console.log(data, 'data');
-  if (data?.success) {
-    const profileData = data.user;
-    setFirstName(profileData.firstName || "");
-    setLastName(profileData.lastName || "");
-    setEmail(profileData.email || "");
-    setYearOfBirth(profileData.yearOfBirth || "");
-    setBio(profileData.shortBio || "");
-    setCountry(profileData.country || "India");
-    setGender(
-      profileData.gender
-        ? profileData.gender.charAt(0).toUpperCase() +
-        profileData.gender.slice(1)
-        : ""
-    );
-    if (profileData.profileImage) {  
-      setProfileImage(profileData.profileImage);
+  React.useEffect(() => {
+    console.log(data, "data");
+    if (data?.success) {
+      const profileData = data.user;
+      setFirstName(profileData.firstName || "");
+      setLastName(profileData.lastName || "");
+      setEmail(profileData.email || "");
+      setYearOfBirth(profileData.yearOfBirth || "");
+      setBio(profileData.shortBio || "");
+      setCountry(profileData.country || "India");
+      setGender(
+        profileData.gender
+          ? profileData.gender.charAt(0).toUpperCase() +
+              profileData.gender.slice(1)
+          : ""
+      );
+      if (profileData.profileImage) {
+        setProfileImage(profileData.profileImage);
+      }
+      if (profileData.location) {
+        setLocation({
+          latitude: profileData.location.latitude,
+          longitude: profileData.location.longitude,
+          address: profileData.location.address,
+        });
+      }
     }
-    if (profileData.location) {
-      setLocation({
-        latitude: profileData.location.latitude,
-        longitude: profileData.location.longitude,
-        address: profileData.location.address
-      });
-    }
-  }
-}, [data]);
+  }, [data]);
 
   const currentYear = new Date().getFullYear();
   const years = Array.from(
@@ -139,14 +139,21 @@ React.useEffect(() => {
     (_, i) => 1975 + i
   ).reverse();
 
+  const [location, setLocation] = useState<{
+    latitude: number;
+    longitude: number;
+    address?: string;
+  } | null>(null);
 
-  const [location, setLocation] = useState<{ latitude: number; longitude: number; address?: string } | null>(null);
-
-  const selectLocation = (coords: { "address": string, "latitude": number, "longitude": number }) => {
+  const selectLocation = (coords: {
+    address: string;
+    latitude: number;
+    longitude: number;
+  }) => {
     setLocation(coords);
-  }
+  };
 
-  if (isLoading) return <ProfileLoadingSkeleton />
+  if (isLoading) return <ProfileLoadingSkeleton />;
 
   return (
     <View style={styles.container}>
@@ -190,7 +197,8 @@ React.useEffect(() => {
 
           <View style={styles.inputGroup}>
             <Text style={styles.label}>EMAIL</Text>
-            <TextInput readOnly
+            <TextInput
+              readOnly
               style={styles.input}
               placeholder="Enter your email"
               value={email}
@@ -210,8 +218,8 @@ React.useEffect(() => {
                 style={
                   yearOfBirth
                     ? {
-                      fontSize: 16,
-                    }
+                        fontSize: 16,
+                      }
                     : styles.dateInputText
                 }
               >
@@ -224,7 +232,7 @@ React.useEffect(() => {
           <View style={styles.inputGroup}>
             <Text style={styles.label}>SHORT BIO</Text>
             <TextInput
-              style={{...styles.input, height:88}}
+              style={{ ...styles.input, height: 88 }}
               placeholder="Enter short bio"
               value={bio}
               onChangeText={setBio}
@@ -234,8 +242,18 @@ React.useEffect(() => {
 
           <View style={styles.inputGroup}>
             <Text style={styles.label}>LOCATION</Text>
-            <View style={{ height: 350, borderRadius: 8, overflow: "hidden", marginTop: 10 }}>
-              <LocationSelector onSelect={selectLocation} />
+            <View
+              style={{
+                height: 350,
+                borderRadius: 8,
+                overflow: "hidden",
+                marginTop: 10,
+              }}
+            >
+              <LocationSelector
+                onSelect={selectLocation}
+                value={data?.user?.location || {}}
+              />
             </View>
           </View>
 
@@ -319,10 +337,11 @@ React.useEffect(() => {
       {/* Save Button */}
       <View style={styles.footer}>
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-          {
-            mutation.isPending ? <ActivityIndicator color="white" /> :
-              <Text style={styles.saveButtonText}>SAVE</Text>
-          }
+          {mutation.isPending ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text style={styles.saveButtonText}>SAVE</Text>
+          )}
         </TouchableOpacity>
       </View>
     </View>
@@ -364,8 +383,8 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   profileImage: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
     borderRadius: 50,
   },
   photoPlaceholder: {

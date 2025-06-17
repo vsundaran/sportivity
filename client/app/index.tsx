@@ -12,9 +12,9 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useDispatch } from "react-redux";
 import API_ENDPOINTS from "../API/apiEndpoints";
 import apiService from "../API/apiService";
@@ -41,7 +41,7 @@ const LoginScreen = () => {
   const { showSuccess, showError } = useToast();
   const router = useRouter();
   const dispatch = useDispatch();
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, setIsAuthenticated } = useAuth();
 
   const validateEmail = (email: string) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -75,11 +75,11 @@ const LoginScreen = () => {
       } else {
         showError(
           "Failed to Send OTP!",
-          response.message || "Please try again"
+          response?.message || "Please try again"
         );
       }
     } catch (err: any) {
-      showError("Failed to Send OTP!", err.message || "Please try again");
+      showError("Failed to Send OTP!", err?.message || "Please try again");
       setError(err?.message || "Failed to send OTP. Please try again.");
     } finally {
       setLoading(false);
@@ -112,11 +112,13 @@ const LoginScreen = () => {
         showSuccess("OTP verified!!!", response.message || "");
         await saveToken(response.token || "");
         dispatch(setToken(response.token || ""));
-        const { isNewUser } = response?.data || {}
+        setIsAuthenticated(true);
+        console.log(response, "response");
+        const { isNewUser } = response?.data || {};
         if (isNewUser) {
           router.replace("/profile");
         } else {
-          router.replace("/activity-list")
+          router.replace("/activity-list");
         }
       } else {
         showError(
@@ -185,7 +187,6 @@ const LoginScreen = () => {
             />
             {error ? <Text style={styles.errorText}>{error}</Text> : null}
           </View>
-
           {/* OTP Input Field (visible after OTP is sent) */}
           {otpSent && (
             <View style={[styles.inputContainer, { marginTop: 5 }]}>
@@ -204,10 +205,11 @@ const LoginScreen = () => {
                 editable={!loading}
                 maxLength={6}
               />
-              {otpError ? <Text style={styles.errorText}>{otpError}</Text> : null}
+              {otpError ? (
+                <Text style={styles.errorText}>{otpError}</Text>
+              ) : null}
             </View>
           )}
-
           {/* Submit Button */}
           <TouchableOpacity
             style={[
@@ -225,7 +227,6 @@ const LoginScreen = () => {
               </Text>
             )}
           </TouchableOpacity>
-
           {/* Resend OTP option */}
           {otpSent && (
             <TouchableOpacity
@@ -240,7 +241,7 @@ const LoginScreen = () => {
                 </Text>
               </Text>
             </TouchableOpacity>
-          )};
+          )}
         </View>
       </View>
     </KeyboardAwareScrollView>

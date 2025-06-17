@@ -40,7 +40,7 @@ export const GetSkills = async () => {
   try {
     const response = await apiService.get(apiEndpoints.SKILLS.GET_SKILLS);
     console.log(response, "response getSkills")
-    return response || {};
+    return response;
   } catch (err) {
     throw err
   }

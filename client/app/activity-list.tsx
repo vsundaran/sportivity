@@ -1,9 +1,6 @@
 import { GetActivity } from "@/API/apiHandler";
 import ActivityListSkeleton from "@/components/UI/loading/activityList";
-import {
-  Ionicons,
-  MaterialCommunityIcons
-} from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import {
@@ -11,9 +8,8 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
-
 
 // Filter options
 const sportOptions = ["Sport", "Tennis", "Badminton", "Running", "Swimming"];
@@ -21,11 +17,12 @@ const timeOptions = ["Time", "Morning", "Afternoon", "Evening"];
 const clubOptions = ["My Clubs", "All Clubs", "Favorites"];
 
 const ActivitiesList = () => {
-
   const { data, isLoading } = useQuery({
     queryKey: ["getActivity"],
     queryFn: GetActivity,
   });
+
+  console.log(data, "data list");
   const activityResponse: any = data || null;
 
   const activities: any = activityResponse?.activities || [];
@@ -54,8 +51,7 @@ const ActivitiesList = () => {
     }
   };
 
-
-  if (isLoading) return <ActivityListSkeleton />
+  if (isLoading) return <ActivityListSkeleton />;
 
   return (
     <View style={{ flex: 1 }}>
@@ -64,7 +60,12 @@ const ActivitiesList = () => {
         {activities?.map((activity: any) => (
           <View key={activity._id} style={styles.activityCard}>
             {/* Card Header */}
-            <View style={[styles.cardHeader, { backgroundColor: activity?.color || "#2196F3" }]}>
+            <View
+              style={[
+                styles.cardHeader,
+                { backgroundColor: activity?.color || "#2196F3" },
+              ]}
+            >
               {/* Activity Icon */}
 
               <View style={styles.activityIconContainer}>
@@ -73,21 +74,36 @@ const ActivitiesList = () => {
 
               {/* Header Content */}
               <View style={styles.headerContent}>
-                <Text style={styles.activityTitle}>{activity.sport} - {activity.gameType}</Text>
+                <Text style={styles.activityTitle}>
+                  {activity.sport} - {activity.gameType}
+                </Text>
 
                 <View style={styles.locationContainer}>
-                  <Ionicons name="location-outline" style={{ marginTop: 3 }} size={16} color="white" />
-                  <Text style={styles.locationText}>{activity?.venue?.address || ""}</Text>
+                  <Ionicons
+                    name="location-outline"
+                    style={{ marginTop: 3 }}
+                    size={16}
+                    color="white"
+                  />
+                  <Text style={styles.locationText}>
+                    {activity?.venue?.address || ""}
+                  </Text>
                 </View>
 
-                {
-                  activity.attributes.find((attr: any) => attr.name === "Skill Level")?.selectedOptions[0] ? <View style={styles.ratingContainer}>
+                {activity.attributes.find(
+                  (attr: any) => attr.name === "Skill Level"
+                )?.selectedOptions[0] ? (
+                  <View style={styles.ratingContainer}>
                     <Text style={styles.ratingText}>
-                      {activity.attributes.find((attr: any) => attr.name === "Skill Level")?.selectedOptions[0]} Skill Level
+                      {
+                        activity.attributes.find(
+                          (attr: any) => attr.name === "Skill Level"
+                        )?.selectedOptions[0]
+                      }{" "}
+                      Skill Level
                     </Text>
-                  </View> : null
-                }
-
+                  </View>
+                ) : null}
               </View>
 
               {/* Bookmark */}
@@ -111,23 +127,33 @@ const ActivitiesList = () => {
                   <Ionicons name="calendar-outline" size={20} color="#757575" />
                   <Text style={styles.detailText}>
                     {new Date(activity.date).toLocaleDateString()},{"\n"}
-                    {new Date(activity.date).toLocaleDateString(undefined, { weekday: 'long' })}
+                    {new Date(activity.date).toLocaleDateString(undefined, {
+                      weekday: "long",
+                    })}
                   </Text>
                 </View>
 
                 <View style={[styles.detailColumn, styles.middleColumn]}>
                   <Ionicons name="time-outline" size={20} color="#757575" />
                   <Text style={styles.detailText}>
-                    {new Date(activity.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    {new Date(activity.date).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                     {"\n"}({activity.duration} hrs)
                   </Text>
                 </View>
 
                 <View style={styles.detailColumn}>
-                  <Ionicons name="people-outline" size={20} style={{ marginLeft: 10 }} color="#757575" />
+                  <Ionicons
+                    name="people-outline"
+                    size={20}
+                    style={{ marginLeft: 10 }}
+                    color="#757575"
+                  />
                   <Text style={styles.detailText}>
-                    {activity.playerSlots - activity.players.length} Available
-                    {"\n"}
+                    {/* {activity.playerSlots - activity.players?.length} Available
+                    {"\n"} */}
                     {activity.playerSlots} Total
                   </Text>
                 </View>
@@ -144,7 +170,9 @@ const ActivitiesList = () => {
                   <Text
                     style={[
                       styles.statusText,
-                      { color: activity.isPaidActivity ? "#4CAF50" : "#BDBDBD" },
+                      {
+                        color: activity.isPaidActivity ? "#4CAF50" : "#BDBDBD",
+                      },
                     ]}
                   >
                     Paid
@@ -173,14 +201,14 @@ const ActivitiesList = () => {
       </ScrollView>
 
       {/* Floating Action Button */}
-      <TouchableOpacity style={styles.fab}
+      <TouchableOpacity
+        style={styles.fab}
         // onPress={() => router.navigate("/invite-player")}
         onPress={() => router.navigate("/create-activity")}
-      // onPress={() => router.navigate("/test")}
+        // onPress={() => router.navigate("/test")}
       >
         <Ionicons name="add" size={24} color="white" />
       </TouchableOpacity>
-
     </View>
   );
 };

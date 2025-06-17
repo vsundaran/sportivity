@@ -43,10 +43,23 @@ export default function LocationSelector({
         latitudeDelta: 0.01,
         longitudeDelta: 0.01,
       };
-      mapRef.current?.animateToRegion(region);
+      setSelectedLocation({
+        latitude: value.latitude,
+        longitude: value.longitude,
+      });
+      setQuery(value.address || "");
+      // Add a small timeout to ensure map is ready
+      setTimeout(() => {
+        mapRef.current?.animateToRegion(region, 1000);
+      }, 100);
+
+      onSelect({
+        latitude: value.latitude,
+        longitude: value.longitude,
+        address: value.address || "Dropped pin",
+      });
     }
-  }, []);
-  useRef<MapView>(null);
+  }, [value]);
 
   useEffect(() => {
     if (selectedLocation && onSelect) {
@@ -159,7 +172,7 @@ export default function LocationSelector({
           data={results}
           keyExtractor={(item) => item.place_id.toString()}
           style={styles.resultList}
-          scrollEnabled={false} // Add this line
+          scrollEnabled={false}
           renderItem={({ item }) => (
             <TouchableOpacity
               onPress={() => selectPlace(item)}
@@ -173,15 +186,29 @@ export default function LocationSelector({
       <MapView
         ref={mapRef}
         style={{ flex: 1 }}
-        initialRegion={{
-          latitude: 12.9716,
-          longitude: 77.5946,
-          latitudeDelta: 0.05,
-          longitudeDelta: 0.05,
-        }}
+        initialRegion={
+          value.latitude && value.longitude
+            ? {
+                latitude: value.latitude,
+                longitude: value.longitude,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01,
+              }
+            : {
+                latitude: 12.9716,
+                longitude: 77.5946,
+                latitudeDelta: 0.05,
+                longitudeDelta: 0.05,
+              }
+        }
         onPress={handleMapPress}
       >
-        {selectedLocation && <Marker coordinate={selectedLocation} />}
+        {selectedLocation && (
+          <Marker
+            coordinate={selectedLocation}
+            title={query || "Selected location"}
+          />
+        )}
       </MapView>
     </View>
   );

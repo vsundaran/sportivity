@@ -1,6 +1,6 @@
-
 import { CreateActivity } from "@/API/apiHandler";
 import LocationSelector from "@/components/UI/map";
+import { useAuth } from "@/context/AuthContext";
 import useDateTimePicker from "@/custom-hooks/datePicker";
 import { clearSelectedPlayers } from "@/redux/slices/playersSlice";
 import { Ionicons } from "@expo/vector-icons";
@@ -21,12 +21,11 @@ import {
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  View
+  View,
 } from "react-native";
 import Toast from "react-native-toast-message";
 import { useSelector } from "react-redux";
 // import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-
 
 type Sport = {
   id: number;
@@ -100,24 +99,30 @@ const sports: Sport | any[] = [
   },
 ];
 
-const gameTypes = ["Singles", "Doubles", "Mixed Doubles", "Practice", "Training"];
+const gameTypes = [
+  "Singles",
+  "Doubles",
+  "Mixed Doubles",
+  "Practice",
+  "Training",
+];
 
 const attributes: Attribute[] = [
   {
     id: 1,
     name: "Skill Level",
-    options: ["Beginner", "Intermediate", "Advanced", "Professional"]
+    options: ["Beginner", "Intermediate", "Advanced", "Professional"],
   },
   {
     id: 2,
     name: "Intensity",
-    options: ["Casual", "Moderate", "Competitive", "Very Competitive"]
+    options: ["Casual", "Moderate", "Competitive", "Very Competitive"],
   },
   {
     id: 3,
     name: "Equipment",
-    options: ["Bring your own", "Provided", "Rent available"]
-  }
+    options: ["Bring your own", "Provided", "Rent available"],
+  },
 ];
 
 const venues = [
@@ -125,7 +130,7 @@ const venues = [
   "Downtown Sports Complex",
   "Riverside Badminton Club",
   "Elite Squash Center",
-  "City Padel Courts"
+  "City Padel Courts",
 ];
 
 const NewActivityScreen = () => {
@@ -144,7 +149,9 @@ const NewActivityScreen = () => {
   const [gameType, setGameType] = useState(gameTypes[0]);
   const [description, setDescription] = useState("");
   const [selectedVenue, setSelectedVenue] = useState("");
-  const [selectedAttributes, setSelectedAttributes] = useState<SelectedAttribute[]>([]);
+  const [selectedAttributes, setSelectedAttributes] = useState<
+    SelectedAttribute[]
+  >([]);
   const [players, setPlayers] = useState<Player[]>([
     {
       id: 1,
@@ -172,14 +179,23 @@ const NewActivityScreen = () => {
   const [showVenueModal, setShowVenueModal] = useState(false);
   const [showAttributeModal, setShowAttributeModal] = useState(false);
   const [showOptionsModal, setShowOptionsModal] = useState(false);
-  const [currentAttribute, setCurrentAttribute] = useState<Attribute | null>(null);
+  const [currentAttribute, setCurrentAttribute] = useState<Attribute | null>(
+    null
+  );
+  const { user } = useAuth();
 
+  const {
+    date: selectedDateAndTime,
+    showDatePicker: visibleDatePicker,
+    showTimePicker,
+    renderPicker,
+  } = useDateTimePicker();
 
-  const { date: selectedDateAndTime, showDatePicker: visibleDatePicker, showTimePicker, renderPicker } = useDateTimePicker();
+  const selectedPlayers = useSelector(
+    (state: any) => state.players.selectedPlayers
+  );
 
-  const selectedPlayers = useSelector((state: any) => state.players.selectedPlayers);
-
-  console.log(selectedPlayers, 'selectedPlayers')
+  console.log(selectedPlayers, "selectedPlayers");
 
   // Animation handlers
   const handleSportSelect = (sport: Sport) => {
@@ -201,7 +217,11 @@ const NewActivityScreen = () => {
     setSelectedSport(sport);
   };
 
-  const adjustValue = (value: number, setValue: React.Dispatch<React.SetStateAction<number>>, increment: boolean) => {
+  const adjustValue = (
+    value: number,
+    setValue: React.Dispatch<React.SetStateAction<number>>,
+    increment: boolean
+  ) => {
     setValue(increment ? value + 1 : Math.max(1, value - 1));
   };
 
@@ -213,7 +233,6 @@ const NewActivityScreen = () => {
   const animatedStyle = {
     transform: [{ scale: scaleInterpolation }],
   };
-
 
   const resetForm = useCallback(() => {
     setSelectedSport(sports[0]);
@@ -251,7 +270,7 @@ const NewActivityScreen = () => {
         id: 4,
         name: "V",
         rating: 4.7,
-        image: "https://i.pravatar.cc/100?img=3"
+        image: "https://i.pravatar.cc/100?img=3",
       },
     ]);
   }, []);
@@ -267,7 +286,8 @@ const NewActivityScreen = () => {
   const handleAddAttribute = () => {
     if (attributes.length > selectedAttributes.length) {
       const availableAttributes = attributes.filter(
-        attr => !selectedAttributes.some(selected => selected.id === attr.id)
+        (attr) =>
+          !selectedAttributes.some((selected) => selected.id === attr.id)
       );
       setCurrentAttribute(availableAttributes[0]);
       setShowAttributeModal(true);
@@ -284,11 +304,13 @@ const NewActivityScreen = () => {
       const newSelectedAttribute: SelectedAttribute = {
         id: currentAttribute.id,
         name: currentAttribute.name,
-        selectedOptions: options
+        selectedOptions: options,
       };
 
-      setSelectedAttributes(prev => {
-        const existingIndex = prev.findIndex(attr => attr.id === currentAttribute.id);
+      setSelectedAttributes((prev) => {
+        const existingIndex = prev.findIndex(
+          (attr) => attr.id === currentAttribute.id
+        );
         if (existingIndex >= 0) {
           const updated = [...prev];
           updated[existingIndex] = newSelectedAttribute;
@@ -303,19 +325,18 @@ const NewActivityScreen = () => {
     }
   };
 
-
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
     mutationFn: (formData: any) => CreateActivity(formData),
-    onSuccess: () => {
+    onSuccess: (resposne) => {
+      console.log(resposne, "resposne");
       Toast.show({
         type: "success",
         text1: "Profile updated successfully",
       });
-      queryClient.invalidateQueries({ queryKey: ['getActivity'] })
+      queryClient.invalidateQueries({ queryKey: ["getActivity"] });
       router.replace("/activity-list");
-
     },
     onError: (error) => {
       Toast.show({
@@ -342,19 +363,28 @@ const NewActivityScreen = () => {
       isVenueBooked,
       isVisibleToInvited,
       isClubActivity,
-      players: selectedPlayers?.map((p: any) => p._id)
+      players: selectedPlayers?.map((p: any) => p._id),
     };
+    console.log(activityData, "activityData");
+
     mutate(activityData);
-    clearSelectedPlayers()
-  }
+    clearSelectedPlayers();
+  };
 
-  const [venueLocation, setVenueLocation] = useState<{ latitude: number; longitude: number; address?: string } | null>(null);
+  const [venueLocation, setVenueLocation] = useState<{
+    latitude: number;
+    longitude: number;
+    address?: string;
+  } | null>(null);
 
-  const selectLocation = (coords: { "address": string, "latitude": number, "longitude": number }) => {
+  const selectLocation = (coords: {
+    address: string;
+    latitude: number;
+    longitude: number;
+  }) => {
     setVenueLocation(coords);
     console.log(coords, "Selected location coordinates");
-  }
-
+  };
 
   // Render methods
   const renderGameTypeModal = () => (
@@ -369,7 +399,7 @@ const NewActivityScreen = () => {
       </TouchableWithoutFeedback>
       <View style={styles.modalContent}>
         <Text style={styles.modalTitle}>Select Game Type</Text>
-        {gameTypes.map(type => (
+        {gameTypes.map((type) => (
           <TouchableOpacity
             key={type}
             style={styles.modalOption}
@@ -388,7 +418,6 @@ const NewActivityScreen = () => {
     </Modal>
   );
 
-
   const renderAttributeModal = () => (
     <Modal
       visible={showAttributeModal}
@@ -402,8 +431,11 @@ const NewActivityScreen = () => {
       <View style={styles.modalContent}>
         <Text style={styles.modalTitle}>Select Attribute</Text>
         {attributes
-          .filter(attr => !selectedAttributes.some(selected => selected.id === attr.id))
-          .map(attr => (
+          .filter(
+            (attr) =>
+              !selectedAttributes.some((selected) => selected.id === attr.id)
+          )
+          .map((attr) => (
             <TouchableOpacity
               key={attr.id}
               style={styles.modalOption}
@@ -433,9 +465,14 @@ const NewActivityScreen = () => {
         <View style={styles.modalOverlay}>
           <TouchableWithoutFeedback>
             <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Select {currentAttribute?.name} Options</Text>
+              <Text style={styles.modalTitle}>
+                Select {currentAttribute?.name} Options
+              </Text>
               {currentAttribute?.options.map((option) => {
-                const currentOptions = selectedAttributes.find(attr => attr.id === currentAttribute.id)?.selectedOptions || [];
+                const currentOptions =
+                  selectedAttributes.find(
+                    (attr) => attr.id === currentAttribute.id
+                  )?.selectedOptions || [];
                 const isSelected = currentOptions.includes(option);
 
                 return (
@@ -444,7 +481,7 @@ const NewActivityScreen = () => {
                     style={styles.modalOption}
                     onPress={() => {
                       const newOptions = isSelected
-                        ? currentOptions.filter(opt => opt !== option)
+                        ? currentOptions.filter((opt) => opt !== option)
                         : [...currentOptions, option];
 
                       handleSelectOptions(newOptions);
@@ -471,7 +508,6 @@ const NewActivityScreen = () => {
   );
 
   return (
-
     <View style={styles.container}>
       {/* <LocationSelector /> */}
       <ScrollView style={styles.scrollView} scrollEnabled={true}>
@@ -514,15 +550,16 @@ const NewActivityScreen = () => {
                   <Ionicons
                     name={sport?.icon}
                     size={18}
-                    color={selectedSport.id === sport.id ? "white" : sport.color}
+                    color={
+                      selectedSport.id === sport.id ? "white" : sport.color
+                    }
                     style={styles.sportIcon}
                   />
                   <Text
                     style={[
                       styles.sportText,
                       {
-                        color:
-                          selectedSport.id === sport.id ? "white" : "#333",
+                        color: selectedSport.id === sport.id ? "white" : "#333",
                       },
                     ]}
                   >
@@ -578,7 +615,8 @@ const NewActivityScreen = () => {
                 style={styles.inputIcon}
               />
               <Text style={styles.inputText}>
-                {selectedDateAndTime?.toLocaleString() || "Select date and time"}
+                {selectedDateAndTime?.toLocaleString() ||
+                  "Select date and time"}
               </Text>
             </TouchableOpacity>
           </View>
@@ -624,8 +662,18 @@ const NewActivityScreen = () => {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>VENUE</Text>
-          <View style={{ height: 350, borderRadius: 8, overflow: "hidden", marginTop: 10 }}>
-            <LocationSelector onSelect={selectLocation} />
+          <View
+            style={{
+              height: 350,
+              borderRadius: 8,
+              overflow: "hidden",
+              marginTop: 10,
+            }}
+          >
+            <LocationSelector
+              onSelect={selectLocation}
+              value={user?.location || {}}
+            />
           </View>
         </View>
 
@@ -682,18 +730,22 @@ const NewActivityScreen = () => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>ATTRIBUTES</Text>
 
-          {selectedAttributes.map(attribute => (
+          {selectedAttributes.map((attribute) => (
             <View key={attribute.id} style={styles.attributeItem}>
               <Text style={styles.attributeName}>{attribute.name}:</Text>
               <View style={styles.attributeOptions}>
-                {attribute.selectedOptions.map(option => (
+                {attribute.selectedOptions.map((option) => (
                   <View key={option} style={styles.attributeOption}>
                     <Text style={styles.attributeOptionText}>{option}</Text>
                   </View>
                 ))}
               </View>
               <TouchableOpacity
-                onPress={() => handleSelectAttribute(attributes.find(a => a.id === attribute.id)!)}
+                onPress={() =>
+                  handleSelectAttribute(
+                    attributes.find((a) => a.id === attribute.id)!
+                  )
+                }
               >
                 <Ionicons name="pencil" size={18} color="#3498db" />
               </TouchableOpacity>
@@ -723,16 +775,25 @@ const NewActivityScreen = () => {
             {selectedPlayers.map((player: any) => (
               <View key={player._id} style={styles.playerItem}>
                 <Image
-                  source={{ uri: player.profileImage || `https://avatar.iran.liara.run/username?username=${player.firstName}+${player.lastName}` }}
+                  source={{
+                    uri:
+                      player.profileImage ||
+                      `https://avatar.iran.liara.run/username?username=${player.firstName}+${player.lastName}`,
+                  }}
                   style={styles.playerImage}
                 />
-                {
-                  player?.rating ? <View style={styles.playerRating}>
-                    <Text style={styles.ratingText}>{player?.rating || ""}</Text>
-                  </View> : null
-                }
+                {player?.rating ? (
+                  <View style={styles.playerRating}>
+                    <Text style={styles.ratingText}>
+                      {player?.rating || ""}
+                    </Text>
+                  </View>
+                ) : null}
 
-                <Text style={styles.playerName}>{player?.firstName || ""}{player?.lastName || ""}</Text>
+                <Text style={styles.playerName}>
+                  {player?.firstName || ""}
+                  {player?.lastName || ""}
+                </Text>
               </View>
             ))}
           </View>
@@ -787,7 +848,10 @@ const NewActivityScreen = () => {
 
         {/* Create Button */}
         <TouchableOpacity
-          style={[styles.createButton, isPending && styles.createButtonDisabled]}
+          style={[
+            styles.createButton,
+            isPending && styles.createButtonDisabled,
+          ]}
           onPress={handleSubmit}
           disabled={isPending}
         >
@@ -1003,7 +1067,7 @@ const styles = StyleSheet.create({
   playerList: {
     flexDirection: "row",
     marginTop: 10,
-    flexWrap: 'wrap',
+    flexWrap: "wrap",
   },
   playerItem: {
     alignItems: "center",
@@ -1054,62 +1118,62 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalContent: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     padding: 20,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 15,
-    color: '#333',
+    color: "#333",
   },
   modalOption: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingVertical: 15,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: "#f0f0f0",
   },
   modalOptionText: {
     fontSize: 16,
-    color: '#333',
+    color: "#333",
   },
   modalCancelButton: {
     marginTop: 15,
     padding: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   modalCancelButtonText: {
-    color: '#e74c3c',
+    color: "#e74c3c",
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   attributeItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 10,
     padding: 10,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: "#f8f8f8",
     borderRadius: 5,
   },
   attributeName: {
-    fontWeight: '500',
+    fontWeight: "500",
     marginRight: 5,
-    color: '#333',
+    color: "#333",
   },
   attributeOptions: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     flex: 1,
   },
   attributeOption: {
-    backgroundColor: '#e0e0e0',
+    backgroundColor: "#e0e0e0",
     borderRadius: 12,
     paddingHorizontal: 8,
     paddingVertical: 4,
@@ -1118,7 +1182,7 @@ const styles = StyleSheet.create({
   },
   attributeOptionText: {
     fontSize: 12,
-    color: '#333',
+    color: "#333",
   },
 });
 

@@ -3,14 +3,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import {
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
 import Toast from "react-native-toast-message";
 
@@ -19,7 +12,7 @@ const SportSelectionScreen = () => {
   const [selectedSport, setSelectedSport] = useState("Tennis");
   const router = useRouter();
 
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   const mainSports = [
     { name: "Tennis", icon: "tennis" },
@@ -30,12 +23,13 @@ const SportSelectionScreen = () => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: UpdateSkill,
-    onSuccess: () => {
+    onSuccess: (response) => {
+      console.log(response, "response");
       Toast.show({
         type: "success",
         text1: "Sport details updated",
       });
-      queryClient.invalidateQueries({ queryKey: ['getSkills'] })
+      queryClient.invalidateQueries({ queryKey: ["getSkills"] });
       router.replace("/skill-assessment");
     },
     onError: (error) => {
@@ -46,9 +40,6 @@ const SportSelectionScreen = () => {
       });
     },
   });
-
-
-
 
   const otherSports: any = [
     // Future sports go here
@@ -128,11 +119,23 @@ const SportSelectionScreen = () => {
 
       {/* Sports Grid */}
       <View style={styles.sportsGrid}>
-        {activeTab === "main"
-          ? mainSports.map((sport) => renderSportItem(sport)) :
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
-            <Text style={{ textAlign: 'center', marginTop: 30 }}>No other sports available yet.</Text>
-          </View>
+        {
+          activeTab === "main" ? (
+            mainSports.map((sport) => renderSportItem(sport))
+          ) : (
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+              }}
+            >
+              <Text style={{ textAlign: "center", marginTop: 30 }}>
+                No other sports available yet.
+              </Text>
+            </View>
+          )
           // otherSports.map((sport: any) => renderSportItem(sport))
         }
       </View>
@@ -148,8 +151,7 @@ const SportSelectionScreen = () => {
           <Text style={styles.continueButtonText}>CONTINUE</Text>
         )}
       </TouchableOpacity>
-
-    </View >
+    </View>
   );
 };
 

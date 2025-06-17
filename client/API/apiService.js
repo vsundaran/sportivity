@@ -1,13 +1,13 @@
-import axios from 'axios';
-import { Platform } from 'react-native';
+import axios from "axios";
+import { Platform } from "react-native";
 // import { getUniqueId } from 'react-native-device-info';
-import { getToken } from '@/utils/token';
+import { getToken } from "@/utils/token";
 
 // Base URL configuration
 const BASE_URL = Platform.select({
-  ios: 'https://sportivity-bhzk.onrender.com/api',
-  android: 'https://sportivity-bhzk.onrender.com/api',
-  default: 'https://sportivity-bhzk.onrender.com/api',
+  ios: "https://sportivity-bhzk.onrender.com/api",
+  android: "https://sportivity-bhzk.onrender.com/api",
+  default: "https://sportivity-bhzk.onrender.com/api",
 });
 
 // Create axios instance
@@ -15,15 +15,16 @@ const apiClient = axios.create({
   baseURL: BASE_URL,
   timeout: 60000, // 60 seconds
   headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
+    "Content-Type": "application/json",
+    Accept: "application/json",
   },
 });
 
 // Intercept and add token
 apiClient.interceptors.request.use(
   async (config) => {
-    const token = await getToken()
+    const token = await getToken();
+    console.log(token);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
       config.headers["x-auth-token"] = `${token}`;
@@ -37,10 +38,10 @@ apiClient.interceptors.request.use(
 
 // Response interceptor
 apiClient.interceptors.response.use(
-  response => {
+  (response) => {
     return response.data;
   },
-  async error => {
+  async (error) => {
     const originalRequest = error.config;
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
@@ -71,14 +72,14 @@ const apiService = {
   },
 
   // For file uploads
-  upload: (url, file, fieldName = 'file', config = {}) => {
+  upload: (url, file, fieldName = "file", config = {}) => {
     const formData = new FormData();
     formData.append(fieldName, file);
 
     return apiClient.post(url, formData, {
       ...config,
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
     });
   },
