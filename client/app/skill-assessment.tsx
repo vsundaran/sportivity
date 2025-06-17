@@ -34,12 +34,14 @@ const SkillAssessmentSummary = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["getSkills"],
     queryFn: GetSkills,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 
   console.log(data, "data skill assessment");
 
   const skillsListData: SkillsData = data?.data || {};
-  console.log(skillsListData, "skillsListData");
+  // console.log(skillsListData, "skillsListData");
 
   const skills = useMemo(() => {
     return (
@@ -74,7 +76,7 @@ const SkillAssessmentSummary = () => {
   const { mutate } = useMutation({
     mutationFn: UpdateSkill,
     onSuccess: (response) => {
-      console.log(response, "response");
+      // console.log(response, "response");
       Toast.show({
         type: "success",
         text1: "Sport details updated",

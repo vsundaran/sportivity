@@ -195,7 +195,7 @@ const NewActivityScreen = () => {
     (state: any) => state.players.selectedPlayers
   );
 
-  console.log(selectedPlayers, "selectedPlayers");
+  // console.log(selectedPlayers, "selectedPlayers");
 
   // Animation handlers
   const handleSportSelect = (sport: Sport) => {
@@ -330,7 +330,7 @@ const NewActivityScreen = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: (formData: any) => CreateActivity(formData),
     onSuccess: (resposne) => {
-      console.log(resposne, "resposne");
+      // console.log(resposne, "resposne");
       Toast.show({
         type: "success",
         text1: "Profile updated successfully",
@@ -365,7 +365,7 @@ const NewActivityScreen = () => {
       isClubActivity,
       players: selectedPlayers?.map((p: any) => p._id),
     };
-    console.log(activityData, "activityData");
+    // console.log(activityData, "activityData");
 
     mutate(activityData);
     clearSelectedPlayers();
@@ -383,7 +383,7 @@ const NewActivityScreen = () => {
     longitude: number;
   }) => {
     setVenueLocation(coords);
-    console.log(coords, "Selected location coordinates");
+    // console.log(coords, "Selected location coordinates");
   };
 
   // Render methods

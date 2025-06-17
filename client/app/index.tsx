@@ -1,7 +1,7 @@
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/custom-hooks/useToast";
 import { setToken } from "@/redux/slices/authSlice";
-import { saveToken } from "@/utils/token";
+import { getToken, saveToken } from "@/utils/token";
 import { Link, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -41,7 +41,7 @@ const LoginScreen = () => {
   const { showSuccess, showError } = useToast();
   const router = useRouter();
   const dispatch = useDispatch();
-  const { isAuthenticated, isLoading, setIsAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading, setIsAuthenticated, user } = useAuth();
 
   const validateEmail = (email: string) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -68,7 +68,7 @@ const LoginScreen = () => {
       const response: any = await apiService.post(API_ENDPOINTS.AUTH.SEND_OTP, {
         email,
       });
-      console.log(response, "response from send otp");
+      // console.log(response, "response from send otp");
       if (response?.success) {
         showSuccess("OTP Sent!", response.message || "Please check your inbox");
         setOtpSent(true);
@@ -115,6 +115,7 @@ const LoginScreen = () => {
         setIsAuthenticated(true);
         console.log(response, "response");
         const { isNewUser } = response?.data || {};
+        console.log(isNewUser, "isNewUser");
         if (isNewUser) {
           router.replace("/profile");
         } else {
@@ -135,11 +136,16 @@ const LoginScreen = () => {
   };
 
   //checking the auth and redirecting to activity list if authenticated
+
   useEffect(() => {
-    if (!isLoading && isAuthenticated) {
-      router.replace("/activity-list");
-    }
-  }, [isLoading, isAuthenticated]);
+    const redirectIfAuthenticated = async () => {
+      const token = await getToken();
+      if (token) {
+        router.navigate("/activity-list");
+      }
+    };
+    redirectIfAuthenticated();
+  }, []);
 
   if (isLoading) {
     return <ActivityIndicator />;

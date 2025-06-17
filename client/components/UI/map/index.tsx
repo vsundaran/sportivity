@@ -108,7 +108,7 @@ export default function LocationSelector({
 
     setSelectedLocation(coords);
     setResults([]);
-    console.log(place.display_name, "place.display_name");
+    // console.log(place.display_name, "place.display_name");
 
     setQuery(place.display_name || "");
 
@@ -119,6 +119,12 @@ export default function LocationSelector({
     };
 
     mapRef.current?.animateToRegion(region);
+
+    onSelect({
+      latitude: coords.latitude,
+      longitude: coords.longitude,
+      address: place?.display_name || "Dropped pin",
+    });
   };
 
   const getLocationFromCoords = async (coords: LatLng) => {

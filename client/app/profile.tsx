@@ -78,7 +78,7 @@ export default function ProfileScreen() {
     formData.append("country", country);
     formData.append("location", JSON.stringify(location));
 
-    console.log(JSON.stringify(location), "JSON.stringify(location)");
+    // console.log(JSON.stringify(location), "JSON.stringify(location)");
 
     if (profileImage) {
       formData.append("profileImage", {
@@ -105,7 +105,7 @@ export default function ProfileScreen() {
   };
 
   React.useEffect(() => {
-    console.log(data, "data");
+    // console.log(data, "data");
     if (data?.success) {
       const profileData = data.user;
       setFirstName(profileData.firstName || "");

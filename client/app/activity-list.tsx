@@ -22,7 +22,7 @@ const ActivitiesList = () => {
     queryFn: GetActivity,
   });
 
-  console.log(data, "data list");
+  // console.log(data, "data list");
   const activityResponse: any = data || null;
 
   const activities: any = activityResponse?.activities || [];
@@ -31,7 +31,7 @@ const ActivitiesList = () => {
 
   const toggleBookmark = (id: string) => {
     // In a real app, you would update the state properly
-    console.log(`Toggling bookmark for activity ${id}`);
+    // console.log(`Toggling bookmark for activity ${id}`);
   };
 
   const getIconComponent = (iconName: string) => {

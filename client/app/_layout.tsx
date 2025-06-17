@@ -13,6 +13,7 @@ import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { store } from "@/redux/store";
 import { darkTheme, lightTheme } from "@/theme";
 import { useColorScheme } from "react-native";
+import { getToken } from "@/utils/token";
 
 const queryClient = new QueryClient();
 SplashScreen.preventAutoHideAsync();
@@ -36,14 +37,20 @@ export default function AppLayoutWrapper() {
 }
 function Layout() {
   const [appIsReady, setAppIsReady] = useState(false);
-  const { isLoading, isAuthenticated } = useAuth();
+  const { isLoading, isAuthenticated, user } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (appIsReady && isAuthenticated) {
-      router.navigate("/activity-list");
-    }
-  }, [appIsReady, isAuthenticated]);
+    const redirectIfAuthenticated = async () => {
+      if (appIsReady) {
+        const token = await getToken();
+        if (token) {
+          router.navigate("/activity-list");
+        }
+      }
+    };
+    redirectIfAuthenticated();
+  }, [appIsReady]);
 
   useEffect(() => {
     const prepare = async () => {
@@ -77,7 +84,7 @@ function RootLayout() {
   const router = useRouter();
   const { user } = useAuth();
 
-  console.log(user, "user");
+  // console.log(user, "user");
 
   return (
     // <SafeAreaView style={{ flex: 1 }} edges={['top']}>

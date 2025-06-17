@@ -5,33 +5,35 @@ import apiService from "./apiService";
 export const GetProfile = async (): Promise<any> => {
   try {
     const response = await apiService.get(apiEndpoints.USER.PROFILE);
-    return response;
+    return response || {};
   } catch (err) {
-    throw err
+    throw err;
   }
 };
 
-export const UpdateProfile = async (data:any) => {
+export const UpdateProfile = async (data: any) => {
   try {
     const response = await apiService.put(apiEndpoints.USER.PROFILE, data, {
       headers: {
-        'Content-Type': 'multipart/form-data',
-      }
+        "Content-Type": "multipart/form-data",
+      },
     });
     return response;
   } catch (err) {
-    throw err
+    throw err;
   }
 };
 
-
 // sport
-export const UpdateSkill = async (data:any) => {
+export const UpdateSkill = async (data: any) => {
   try {
-    const response = await apiService.post(apiEndpoints.SKILLS.USER_SKILL, data);
+    const response = await apiService.post(
+      apiEndpoints.SKILLS.USER_SKILL,
+      data
+    );
     return response;
   } catch (err) {
-    throw err
+    throw err;
   }
 };
 
@@ -39,38 +41,42 @@ export const UpdateSkill = async (data:any) => {
 export const GetSkills = async () => {
   try {
     const response = await apiService.get(apiEndpoints.SKILLS.GET_SKILLS);
-    console.log(response, "response getSkills")
-    return response;
+    // console.log(response, "response getSkills")
+    return response || {};
   } catch (err) {
-    throw err
+    throw err;
   }
 };
 
-
 // activity
-export const CreateActivity = async (data:any) => {
+export const CreateActivity = async (data: any) => {
   try {
-    const response = await apiService.post(apiEndpoints.ACTIVITY.CREATE_ACTIVITY, data);
+    const response = await apiService.post(
+      apiEndpoints.ACTIVITY.CREATE_ACTIVITY,
+      data
+    );
     return response;
   } catch (err) {
-    throw err
+    throw err;
   }
-}
+};
 
 export const GetActivity = async () => {
   try {
     const response = await apiService.get(apiEndpoints.ACTIVITY.GET_ACTIVITIES);
     return response;
   } catch (err) {
-    throw err
+    throw err;
   }
-}
+};
 
-export const GetPlayers = async (query:string, tab:string) => {
+export const GetPlayers = async (query: string, tab: string) => {
   try {
-    const response = await apiService.get(apiEndpoints.PLAYERS.GET_PLAYERS, { name: query });
+    const response = await apiService.get(apiEndpoints.PLAYERS.GET_PLAYERS, {
+      name: query,
+    });
     return response;
   } catch (err) {
-    throw err
+    throw err;
   }
-}
+};
