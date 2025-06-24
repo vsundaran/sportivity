@@ -280,6 +280,33 @@ exports.saveActivity = async (req, res) => {
 };
 
 /**
+ * Remove activities
+ */
+exports.removeSavedActivity = async (req, res) => {
+  const { activityId } = req.body;
+  const userId = req.user.id;
+  try {
+    const result = await SavedActivity.findOneAndDelete({ userId, activityId });
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        message: "Saved activity not found",
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: "Activity removed from saved successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to remove saved activity",
+      error: error.message,
+    });
+  }
+};
+
+/**
  * Get saved activities
  */
 exports.getSavedActivity = async (req, res) => {

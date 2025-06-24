@@ -125,13 +125,6 @@ const attributes: Attribute[] = [
   },
 ];
 
-const venues = [
-  "Central Park Tennis Courts",
-  "Downtown Sports Complex",
-  "Riverside Badminton Club",
-  "Elite Squash Center",
-  "City Padel Courts",
-];
 
 const NewActivityScreen = () => {
   const router = useRouter();
@@ -152,27 +145,6 @@ const NewActivityScreen = () => {
   const [selectedAttributes, setSelectedAttributes] = useState<
     SelectedAttribute[]
   >([]);
-  const [players, setPlayers] = useState<Player[]>([
-    {
-      id: 1,
-      name: "You",
-      rating: 4.5,
-      image: "https://i.pravatar.cc/100?img=1",
-    },
-    {
-      id: 2,
-      name: "Janely",
-      rating: 4.5,
-      image: "https://i.pravatar.cc/100?img=5",
-    },
-    {
-      id: 3,
-      name: "Kristine",
-      rating: 4.3,
-      image: "https://i.pravatar.cc/100?img=9",
-    },
-    { id: 4, name: "V", rating: 4.7, image: "https://i.pravatar.cc/100?img=3" },
-  ]);
 
   // UI state
   const [showGameTypeModal, setShowGameTypeModal] = useState(false);
@@ -247,32 +219,32 @@ const NewActivityScreen = () => {
     setDescription("");
     setVenueLocation(null);
     setSelectedAttributes([]);
-    setPlayers([
-      {
-        id: 1,
-        name: "You",
-        rating: 4.5,
-        image: "https://i.pravatar.cc/100?img=1",
-      },
-      {
-        id: 2,
-        name: "Janely",
-        rating: 4.5,
-        image: "https://i.pravatar.cc/100?img=5",
-      },
-      {
-        id: 3,
-        name: "Kristine",
-        rating: 4.3,
-        image: "https://i.pravatar.cc/100?img=9",
-      },
-      {
-        id: 4,
-        name: "V",
-        rating: 4.7,
-        image: "https://i.pravatar.cc/100?img=3",
-      },
-    ]);
+    // setPlayers([
+    //   {
+    //     id: 1,
+    //     name: "You",
+    //     rating: 4.5,
+    //     image: "https://i.pravatar.cc/100?img=1",
+    //   },
+    //   {
+    //     id: 2,
+    //     name: "Janely",
+    //     rating: 4.5,
+    //     image: "https://i.pravatar.cc/100?img=5",
+    //   },
+    //   {
+    //     id: 3,
+    //     name: "Kristine",
+    //     rating: 4.3,
+    //     image: "https://i.pravatar.cc/100?img=9",
+    //   },
+    //   {
+    //     id: 4,
+    //     name: "V",
+    //     rating: 4.7,
+    //     image: "https://i.pravatar.cc/100?img=3",
+    //   },
+    // ]);
   }, []);
 
   // Reset form when screen comes into focus

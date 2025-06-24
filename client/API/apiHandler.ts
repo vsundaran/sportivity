@@ -78,6 +78,18 @@ export const GetActivity = async () => {
   }
 };
 
+export const SaveActivity = async (data: { activityId: string }) => {
+  try {
+    const response = await apiService.post(
+      apiEndpoints.ACTIVITY.SAVE_ACTIVITY,
+      data
+    );
+    return response;
+  } catch (err) {
+    throw err;
+  }
+};
+
 export const GetPlayers = async (query: string, tab: string) => {
   try {
     const response = await apiService.get(apiEndpoints.PLAYERS.GET_PLAYERS, {

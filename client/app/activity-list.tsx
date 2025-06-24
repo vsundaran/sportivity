@@ -1,7 +1,7 @@
-import { GetActivity } from "@/API/apiHandler";
+import { GetActivity, SaveActivity } from "@/API/apiHandler";
 import ActivityListSkeleton from "@/components/UI/loading/activityList";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import {
   ScrollView,
@@ -10,11 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
-// Filter options
-const sportOptions = ["Sport", "Tennis", "Badminton", "Running", "Swimming"];
-const timeOptions = ["Time", "Morning", "Afternoon", "Evening"];
-const clubOptions = ["My Clubs", "All Clubs", "Favorites"];
+import Toast from "react-native-toast-message";
 
 const ActivitiesList = () => {
   const { data, isLoading } = useQuery({
@@ -22,16 +18,38 @@ const ActivitiesList = () => {
     queryFn: GetActivity,
   });
 
-  // console.log(data, "data list");
+  const queryClient = useQueryClient();
+  const { mutate, isPending } = useMutation({
+    mutationFn: (formData: any) => SaveActivity(formData),
+    onSuccess: (resposne) => {
+      // console.log(resposne, "resposne");
+      Toast.show({
+        type: "success",
+        text1: "Activity saved successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ["getActivity"] });
+      router.replace("/activity-list");
+    },
+    onError: (error) => {
+      Toast.show({
+        type: "error",
+        text1: "Failed to save activity",
+        text2: error?.message || "Something went wrong",
+      });
+    },
+  });
+
+  console.log(data, "data list");
   const activityResponse: any = data || null;
 
   const activities: any = activityResponse?.activities || [];
 
   const router = useRouter();
 
-  const toggleBookmark = (id: string) => {
+  const toggleBookmark = (activityId: string) => {
     // In a real app, you would update the state properly
     // console.log(`Toggling bookmark for activity ${id}`);
+    mutate({ activityId });
   };
 
   const getIconComponent = (iconName: string) => {
@@ -112,7 +130,7 @@ const ActivitiesList = () => {
                 onPress={() => toggleBookmark(activity._id)}
               >
                 <Ionicons
-                  name={activity.isBookmarked ? "bookmark" : "bookmark-outline"}
+                  name={activity.isSaved ? "bookmark" : "bookmark-outline"}
                   size={24}
                   color="white"
                 />

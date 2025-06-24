@@ -7,6 +7,7 @@ const {
   getActivities,
   saveActivity,
   getSavedActivity,
+  removeSavedActivity,
 } = require("../controllers/activity");
 
 // Log activity
@@ -17,6 +18,7 @@ router.get("/", auth, getActivities);
 
 // Save user activities
 router.post("/save-activity", auth, saveActivity);
+router.post("/remove-saved-activity", auth, removeSavedActivity);
 
 router.get("/saved-activities", auth, getSavedActivity);
 
