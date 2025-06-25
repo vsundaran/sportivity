@@ -50,7 +50,7 @@ const SportSelectionScreen = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: UpdateSkill,
     onSuccess: (response) => {
-      console.log(response, "pic sport");
+      //console.log(response, "pic sport");
       Toast.show({
         type: "success",
         text1: "Sport details updated",

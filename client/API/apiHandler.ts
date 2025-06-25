@@ -72,6 +72,7 @@ export const CreateActivity = async (data: any) => {
 export const GetActivity = async () => {
   try {
     const response = await apiService.get(apiEndpoints.ACTIVITY.GET_ACTIVITIES);
+    //console.log(response, "response GetActivity");
     return response;
   } catch (err) {
     throw err;
@@ -82,6 +83,18 @@ export const SaveActivity = async (data: { activityId: string }) => {
   try {
     const response = await apiService.post(
       apiEndpoints.ACTIVITY.SAVE_ACTIVITY,
+      data
+    );
+    return response;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const RemoveSavedActivity = async (data: { activityId: string }) => {
+  try {
+    const response = await apiService.post(
+      apiEndpoints.ACTIVITY.REMOVE_SAVE_ACTIVITY,
       data
     );
     return response;

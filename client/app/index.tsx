@@ -113,9 +113,9 @@ const LoginScreen = () => {
         await saveToken(response.token || "");
         dispatch(setToken(response.token || ""));
         setIsAuthenticated(true);
-        console.log(response, "response");
+        //console.log(response, "response");
         const { isNewUser } = response?.data || {};
-        console.log(isNewUser, "isNewUser");
+        //console.log(isNewUser, "isNewUser");
         if (isNewUser) {
           router.replace("/profile");
         } else {

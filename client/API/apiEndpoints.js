@@ -17,7 +17,8 @@ const API_ENDPOINTS = {
   ACTIVITY: {
     CREATE_ACTIVITY: "/activity",
     GET_ACTIVITIES: "/activity",
-    SAVE_ACTIVITY: "/save-activity",
+    SAVE_ACTIVITY: "/activity/save-activity",
+    REMOVE_SAVE_ACTIVITY: "/activity/remove-saved-activity",
   },
   PLAYERS: {
     GET_PLAYERS: "/users",

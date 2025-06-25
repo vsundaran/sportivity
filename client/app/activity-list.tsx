@@ -1,9 +1,14 @@
-import { GetActivity, SaveActivity } from "@/API/apiHandler";
+import {
+  GetActivity,
+  RemoveSavedActivity,
+  SaveActivity,
+} from "@/API/apiHandler";
 import ActivityListSkeleton from "@/components/UI/loading/activityList";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import {
+  ActivityIndicator,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,47 +18,77 @@ import {
 import Toast from "react-native-toast-message";
 
 const ActivitiesList = () => {
-  const { data, isLoading } = useQuery({
-    queryKey: ["getActivity"],
+  const {
+    data: activityResponse,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["activities"],
     queryFn: GetActivity,
   });
 
   const queryClient = useQueryClient();
-  const { mutate, isPending } = useMutation({
-    mutationFn: (formData: any) => SaveActivity(formData),
-    onSuccess: (resposne) => {
-      // console.log(resposne, "resposne");
-      Toast.show({
-        type: "success",
-        text1: "Activity saved successfully",
-      });
-      queryClient.invalidateQueries({ queryKey: ["getActivity"] });
-      router.replace("/activity-list");
+  const router = useRouter();
+
+  // Optimistic update mutation for bookmark toggle
+  const { mutate: toggleBookmark } = useMutation({
+    mutationFn: async ({
+      activityId,
+      isCurrentlySaved,
+    }: {
+      activityId: string;
+      isCurrentlySaved: boolean;
+    }) => {
+      return isCurrentlySaved
+        ? RemoveSavedActivity({ activityId })
+        : SaveActivity({ activityId });
     },
-    onError: (error) => {
+    onMutate: async ({ activityId, isCurrentlySaved }) => {
+      // Cancel any outgoing refetches to avoid overwriting our optimistic update
+      await queryClient.cancelQueries({ queryKey: ["activities"] });
+
+      // Snapshot the previous value
+      const previousActivities = queryClient.getQueryData(["activities"]);
+
+      // Optimistically update to the new value
+      queryClient.setQueryData(["activities"], (old: any) => {
+        if (!old) return old;
+        return {
+          ...old,
+          activities: old.activities.map((activity: any) =>
+            activity._id === activityId
+              ? { ...activity, isSaved: !isCurrentlySaved }
+              : activity
+          ),
+        };
+      });
+
+      // Return a context object with the snapshotted value
+      return { previousActivities };
+    },
+    onError: (error, variables, context) => {
+      // Rollback to the previous value if mutation fails
+      if (context?.previousActivities) {
+        queryClient.setQueryData(["activities"], context.previousActivities);
+      }
       Toast.show({
         type: "error",
-        text1: "Failed to save activity",
+        text1: "Failed to update bookmark",
         text2: error?.message || "Something went wrong",
       });
     },
+    onSettled: () => {
+      // Always refetch after error or success to ensure our server state is correct
+      queryClient.invalidateQueries({ queryKey: ["activities"] });
+    },
   });
-
-  console.log(data, "data list");
-  const activityResponse: any = data || null;
-
-  const activities: any = activityResponse?.activities || [];
-
-  const router = useRouter();
-
-  const toggleBookmark = (activityId: string) => {
-    // In a real app, you would update the state properly
-    // console.log(`Toggling bookmark for activity ${id}`);
-    mutate({ activityId });
-  };
+  const activityList: any = activityResponse;
+  const activities = activityList?.activities || [];
+  //console.log(activities, "activities");
+  //console.log(activityResponse, "activityResponse");
 
   const getIconComponent = (iconName: string) => {
-    switch (iconName) {
+    switch (iconName.toLowerCase()) {
       case "tennis":
         return <MaterialCommunityIcons name="tennis" size={24} color="white" />;
       case "badminton":
@@ -69,13 +104,38 @@ const ActivitiesList = () => {
     }
   };
 
-  if (isLoading) return <ActivityListSkeleton />;
+  if (isLoading) {
+    return <ActivityListSkeleton />;
+  }
+
+  if (isError) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Failed to load activities</Text>
+        <TouchableOpacity
+          style={styles.retryButton}
+          onPress={() =>
+            queryClient.invalidateQueries({ queryKey: ["activities"] })
+          }
+        >
+          <Text style={styles.retryButtonText}>Try Again</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  if (activities.length === 0) {
+    return (
+      <View style={styles.emptyContainer}>
+        <Text style={styles.emptyText}>No activities found</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={{ flex: 1 }}>
-      {/* Activities List */}
       <ScrollView style={styles.activitiesList}>
-        {activities?.map((activity: any) => (
+        {activities.map((activity: any) => (
           <View key={activity._id} style={styles.activityCard}>
             {/* Card Header */}
             <View
@@ -84,13 +144,10 @@ const ActivitiesList = () => {
                 { backgroundColor: activity?.color || "#2196F3" },
               ]}
             >
-              {/* Activity Icon */}
-
               <View style={styles.activityIconContainer}>
-                {getIconComponent(activity.sport.toLowerCase())}
+                {getIconComponent(activity.sport)}
               </View>
 
-              {/* Header Content */}
               <View style={styles.headerContent}>
                 <Text style={styles.activityTitle}>
                   {activity.sport} - {activity.gameType}
@@ -110,7 +167,7 @@ const ActivitiesList = () => {
 
                 {activity.attributes.find(
                   (attr: any) => attr.name === "Skill Level"
-                )?.selectedOptions[0] ? (
+                )?.selectedOptions[0] && (
                   <View style={styles.ratingContainer}>
                     <Text style={styles.ratingText}>
                       {
@@ -121,13 +178,18 @@ const ActivitiesList = () => {
                       Skill Level
                     </Text>
                   </View>
-                ) : null}
+                )}
               </View>
 
-              {/* Bookmark */}
               <TouchableOpacity
                 style={styles.bookmarkButton}
-                onPress={() => toggleBookmark(activity._id)}
+                onPress={() =>
+                  toggleBookmark({
+                    activityId: activity._id,
+                    isCurrentlySaved: activity.isSaved,
+                  })
+                }
+                disabled={activity.isBookmarkUpdating}
               >
                 <Ionicons
                   name={activity.isSaved ? "bookmark" : "bookmark-outline"}
@@ -139,7 +201,6 @@ const ActivitiesList = () => {
 
             {/* Card Details */}
             <View style={styles.cardDetails}>
-              {/* Date, Time, Availability */}
               <View style={styles.detailsRow}>
                 <View style={styles.detailColumn}>
                   <Ionicons name="calendar-outline" size={20} color="#757575" />
@@ -170,14 +231,11 @@ const ActivitiesList = () => {
                     color="#757575"
                   />
                   <Text style={styles.detailText}>
-                    {/* {activity.playerSlots - activity.players?.length} Available
-                    {"\n"} */}
                     {activity.playerSlots} Total
                   </Text>
                 </View>
               </View>
 
-              {/* Status Indicators */}
               <View style={styles.statusContainer}>
                 <View style={styles.statusItem}>
                   <Ionicons
@@ -218,12 +276,9 @@ const ActivitiesList = () => {
         ))}
       </ScrollView>
 
-      {/* Floating Action Button */}
       <TouchableOpacity
         style={styles.fab}
-        // onPress={() => router.navigate("/invite-player")}
         onPress={() => router.navigate("/create-activity")}
-        // onPress={() => router.navigate("/test")}
       >
         <Ionicons name="add" size={24} color="white" />
       </TouchableOpacity>
@@ -232,6 +287,36 @@ const ActivitiesList = () => {
 };
 
 const styles = StyleSheet.create({
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: "#FF3B30",
+    marginBottom: 20,
+  },
+  retryButton: {
+    backgroundColor: "#2196F3",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
+  },
+  retryButtonText: {
+    color: "white",
+    fontSize: 16,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyText: {
+    fontSize: 16,
+    color: "#757575",
+  },
   container: {
     flex: 1,
     backgroundColor: "#F5F5F5",

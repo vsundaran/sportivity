@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const checkAndRefetch = async () => {
       const token = await getToken();
       if (token && isTokenValid(token)) {
-        console.log("refetching");
+        //console.log("refetching");
         refetch();
       }
     };
@@ -76,7 +76,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const userData = data?.user as User | null | undefined;
-    console.log(userData, "userData");
+    //console.log(userData, "userData");
     if (userData) {
       setUser(userData);
       setIsAuthenticated(true);
